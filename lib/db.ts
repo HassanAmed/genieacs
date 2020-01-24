@@ -46,13 +46,16 @@ export let tasksCollection: Collection,
 
 let clientPromise: Promise<MongoClient>;
 export let client: MongoClient;
-
+/**
+ * @summary Initialize db(all collections) and connect to it
+ */
 export async function connect(): Promise<void> {
   clientPromise = MongoClient.connect("" + get("MONGODB_CONNECTION_URL"), {
     useNewUrlParser: true
   });
 
   client = await clientPromise;
+  
   const db = client.db();
 
   tasksCollection = db.collection("tasks");
@@ -70,13 +73,19 @@ export async function connect(): Promise<void> {
   usersCollection = db.collection("users");
   configCollection = db.collection("config");
 }
-
+/**
+ * @summary Disconnect from mongodb client
+ */
 export async function disconnect(): Promise<void> {
   if (clientPromise) await (await clientPromise).close();
 }
 
 // Optimize projection by removing overlaps
 // This can modify the object
+/**
+ * @summary Remove overlapping entries
+ * @param obj 
+ */
 function optimizeProjection(obj: {}): {} {
   if (obj[""]) return { "": obj[""] };
 

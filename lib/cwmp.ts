@@ -52,8 +52,13 @@ import { decode, encodingExists } from "iconv-lite";
 import { parseXmlDeclaration } from "./xml-parser";
 import * as debug from "./debug";
 import { getRequestOrigin } from "./forwarded";
-
+/**
+ * Compress Data using zlib.gzip.
+ */
 const gzipPromisified = promisify(zlib.gzip);
+/**
+ * Compress Data using zlib.deflate.
+ */
 const deflatePromisified = promisify(zlib.deflate);
 
 const REALM = "GenieACS";
@@ -69,7 +74,11 @@ const stats = {
   droppedRequests: 0,
   initiatedSessions: 0
 };
-
+/**
+ * @summary Authentication of session 
+ * @param sessionContext runtime http session
+ * @param body body
+ */
 async function authenticate(
   sessionContext: SessionContext,
   body: string
@@ -156,7 +165,12 @@ async function authenticate(
 
   return false;
 }
-
+/**
+ * @summary Create response for a session
+ * @param sessionContext runtime http session instance
+ * @param res response
+ * @param close to check if session is closed or still live
+ */
 async function writeResponse(
   sessionContext: SessionContext,
   res,
@@ -173,6 +187,7 @@ async function writeResponse(
     res.data.length > 0
   ) {
     switch (sessionContext.httpRequest.headers["content-encoding"]) {
+      //Compressing data
       case "gzip":
         res.headers["Content-Encoding"] = "gzip";
         data = await gzipPromisified(data);
@@ -210,7 +225,6 @@ async function writeResponse(
     currentSessions.set(connection, sessionContext);
   }
 }
-
 function recordFault(
   sessionContext: SessionContext,
   fault: Fault,
@@ -218,6 +232,13 @@ function recordFault(
   channels
 ): void;
 function recordFault(sessionContext: SessionContext, fault: Fault): void;
+/**
+ * @summary Record/log faults during a session
+ * @param sessionContext runtime session instace
+ * @param fault faults detected
+ * @param provisions sessions' property sessionContext.channel 
+ * @param channels sessions' property sessionContext.channel
+ */
 function recordFault(
   sessionContext: SessionContext,
   fault: Fault,
@@ -348,7 +369,11 @@ async function transferComplete(sessionContext, rpc): Promise<void> {
   return writeResponse(sessionContext, res);
 }
 
-// Append provisions and remove duplicates
+/**
+ * @summary  Append provisions and remove duplicates
+ * @param original orignal provisions
+ * @param toAppend appended provision
+ */
 function appendProvisions(original, toAppend): boolean {
   let modified = false;
   const stringified = new WeakMap();
@@ -379,7 +404,10 @@ function appendProvisions(original, toAppend): boolean {
 
   return modified;
 }
-
+/**
+ * @summary get Presets from db
+ * @param sessionContext runtime http session instance
+ */
 async function applyPresets(sessionContext: SessionContext): Promise<void> {
   const deviceData = sessionContext.deviceData;
   const presets = localCache.getPresets(sessionContext.cacheSnapshot);
@@ -564,7 +592,10 @@ async function applyPresets(sessionContext: SessionContext): Promise<void> {
 
   return sendAcsRequest(sessionContext, id, acsRequest);
 }
-
+/**
+ * @summary Handle new rpc request
+ * @param sessionContext runtime http session instance
+ */
 async function nextRpc(sessionContext: SessionContext): Promise<void> {
   const { fault: fault, rpcId: id, rpc: acsRequest } = await session.rpcRequest(
     sessionContext,
@@ -689,7 +720,10 @@ async function nextRpc(sessionContext: SessionContext): Promise<void> {
 
   return nextRpc(sessionContext);
 }
-
+/**
+ * @summary End running session
+ * @param sessionContext runtime http session instance
+ */
 async function endSession(sessionContext: SessionContext): Promise<boolean> {
   let saveCache = sessionContext.cacheUntil != null;
 
@@ -757,7 +791,13 @@ async function endSession(sessionContext: SessionContext): Promise<boolean> {
   await Promise.all(promises);
   return sessionContext.new;
 }
-
+/**
+ * @summary Handling Acs 
+ * @param sessionContext runtime http session instance
+ * @param id 
+ * @param acsRequest 
+ * @returns Response using fn writeResponse()
+ */
 async function sendAcsRequest(
   sessionContext: SessionContext,
   id?: string,
@@ -804,7 +844,12 @@ async function sendAcsRequest(
   const res = soap.response(rpc);
   return writeResponse(sessionContext, res);
 }
-
+/**
+ * @summary Get session instace against give connection and id
+ * @param connection Connection
+ * @param sessionId ID
+ * @returns session if exists else null
+ */
 async function getSession(connection, sessionId): Promise<SessionContext> {
   const sessionContext = currentSessions.get(connection);
   if (sessionContext) {
@@ -824,7 +869,10 @@ async function getSession(connection, sessionId): Promise<SessionContext> {
 // Only needed to prevent tree shaking from removing the remoteAddress
 // workaround in onConnection function.
 const remoteAddressWorkaround = new WeakMap<Socket, string>();
-
+/**
+ * @summary While connection is on, assign a socket to detect & logchanges in connection 
+ * @param socket Socket
+ */
 // When socket closes, store active sessions in cache
 export function onConnection(socket: Socket): void {
   // The property remoteAddress may be undefined after the connection is
@@ -884,7 +932,11 @@ setInterval(() => {
   stats.droppedRequests = 0;
   stats.initiatedSessions = 0;
 }, 10000).unref();
-
+/**
+ * @description Get due taks and faults of a device
+ * @param deviceId device Id 
+ * @param timestamp timestamp
+ */
 async function getDueTasksAndFaultsAndOperations(
   deviceId,
   timestamp
@@ -917,7 +969,14 @@ async function getDueTasksAndFaultsAndOperations(
     ttl: res2[0][1] || 0
   };
 }
-
+/**
+ * @description Cache save due tasks and faults
+ * @param deviceId device Id
+ * @param tasks tasks 
+ * @param faults faults
+ * @param operations operations 
+ * @param cacheUntil Time to keep cached
+ */
 async function cacheDueTasksAndFaultsAndOperations(
   deviceId,
   tasks,
@@ -944,7 +1003,9 @@ async function cacheDueTasksAndFaultsAndOperations(
     ttl
   );
 }
-
+/**
+ * @description Report/log if something bad in session has occured. close & delete session 
+ */
 async function reportBadState(sessionContext: SessionContext): Promise<void> {
   logger.accessError({
     message: "Bad session state",
@@ -959,7 +1020,11 @@ async function reportBadState(sessionContext: SessionContext): Promise<void> {
     debug.outgoingHttpResponse(httpResponse, sessionContext.deviceId, body);
   httpResponse.end(body);
 }
-
+/**
+ * @description Log if invalid/unauthorized credentials
+ * @param sessionContext 
+ * @param close 
+ */
 async function responseUnauthorized(
   sessionContext: SessionContext,
   close: boolean
@@ -996,7 +1061,13 @@ async function responseUnauthorized(
     debug.outgoingHttpResponse(httpResponse, sessionContext.deviceId, body);
   httpResponse.end(body);
 }
-
+/**
+ * @description Process and log an rpc request based on type of request
+ * @param sessionContext sessionContext 
+ * @param rpc rpc 
+ * @param parseWarnings parseWarnings 
+ * @param body body 
+ */
 async function processRequest(
   sessionContext: SessionContext,
   rpc: SoapMessage,
@@ -1162,7 +1233,11 @@ async function processRequest(
     return nextRpc(sessionContext);
   }
 }
-
+/**
+ * @description Listener to handle session messages/requests 
+ * @param httpRequest IncomingMessage
+ * @param httpResponse ServerResponse
+ */
 export function listener(
   httpRequest: IncomingMessage,
   httpResponse: ServerResponse
@@ -1182,7 +1257,11 @@ export function listener(
       });
     });
 }
-
+/**
+ * @description Decode string
+ * @param buffer buffer
+ * @param charset string
+ */
 function decodeString(buffer: Buffer, charset: string): string {
   try {
     return buffer.toString(charset);
@@ -1191,7 +1270,12 @@ function decodeString(buffer: Buffer, charset: string): string {
   }
   return null;
 }
-
+/**
+ * @description Handle requests asynchronnously used by listener() only POST request allowed on this server
+ * @param httpRequest IncomingMessage
+ * @param httpResponse  ServerResponse
+ * @returns resolves promise on completion
+ */
 async function listenerAsync(
   httpRequest: IncomingMessage,
   httpResponse: ServerResponse

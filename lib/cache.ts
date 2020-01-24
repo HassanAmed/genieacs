@@ -19,13 +19,17 @@
 
 import { MongoClient, Collection } from "mongodb";
 import * as config from "./config";
-
+/**
+ * Max cache time limit -(TTL time to live)
+ */
 const MAX_CACHE_TTL = +config.get("MAX_CACHE_TTL");
 
 let clientPromise: Promise<MongoClient>;
 let mongoCollection: Collection;
 let mongoTimeOffset = 0;
-
+/**
+ * @summary create connection with mongodb
+ */
 export async function connect(): Promise<void> {
   const MONGODB_CONNECTION_URL = "" + config.get("MONGODB_CONNECTION_URL");
   clientPromise = MongoClient.connect(MONGODB_CONNECTION_URL, {
@@ -38,11 +42,16 @@ export async function connect(): Promise<void> {
   const res = await db.command({ hostInfo: 1 });
   mongoTimeOffset = res.system.currentTime.getTime() - now;
 }
-
+/**
+ * @summary Disconnect form mongodb
+ */
 export async function disconnect(): Promise<void> {
   if (clientPromise) await (await clientPromise).close();
 }
-
+/**
+ * @summary get values from db for provided key/keys
+ * @param key key or key[array] 
+ */
 export async function get(key): Promise<any> {
   const expire = new Date(Date.now() - mongoTimeOffset);
   if (Array.isArray(key)) {
@@ -65,13 +74,22 @@ export async function get(key): Promise<any> {
     return null;
   }
 }
-
+/**
+ * @summary Delete key value pair/s for provieded key
+ * @param key key or key[array]
+ * @returns returns promise after deletion is done
+ */
 export async function del(key): Promise<void> {
   if (Array.isArray(key))
     await mongoCollection.deleteMany({ _id: { $in: key } });
   else await mongoCollection.deleteOne({ _id: key });
 }
-
+/**
+ * @summary Set/Replace a key/value pair
+ * @param key key
+ * @param value value
+ * @param ttl time to live = Max_CACHE_TTL
+ */
 export async function set(
   key: string,
   value: string | number,
@@ -84,7 +102,10 @@ export async function set(
     { upsert: true }
   );
 }
-
+/**
+ * @summary Find and delete key/value pair against given key
+ * @param key key
+ */
 export async function pop(key): Promise<any> {
   const res = await mongoCollection.findOneAndDelete({ _id: key });
 
@@ -97,7 +118,11 @@ export async function pop(key): Promise<any> {
 
   return null;
 }
-
+/**
+ * 
+ * @param lockName 
+ * @param ttl 
+ */
 export async function lock(lockName, ttl): Promise<Function> {
   const token = Math.random()
     .toString(36)

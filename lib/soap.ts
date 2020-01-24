@@ -38,9 +38,13 @@ import {
   SoapMessage,
   TransferCompleteRequest
 } from "./types";
-
+/**
+ * Server Name based on version defined in pkg.json
+ */
 const SERVER_NAME = `GenieACS/${VERSION}`;
-
+/**
+ * Xml Namespace for SOAP messages
+ */
 const NAMESPACES = {
   "1.0": {
     "soap-enc": "http://schemas.xmlsoap.org/soap/encoding/",
@@ -82,7 +86,10 @@ const NAMESPACES = {
 let warnings;
 
 const memoizedParseAttrs = memoize(parseAttrs);
-
+/**
+ * Parse a boolean
+ * @param v boolean
+ */
 function parseBool(v): boolean {
   v = "" + v;
   if (v === "true" || v === "TRUE" || v === "True" || v === "1") return true;
@@ -90,13 +97,18 @@ function parseBool(v): boolean {
     return false;
   else return null;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function event(xml: Element): string[] {
   return xml.children
     .filter(n => n.localName === "EventStruct")
     .map(c => c.children.find(n => n.localName === "EventCode").text.trim());
 }
-
+/**
+ * @summary Take xml element and return params info.
+ * @param xml Xml Element
+ */
 function parameterInfoList(xml: Element): [string, boolean][] {
   return xml.children
     .filter(e => e.localName === "ParameterInfoStruct")
@@ -132,7 +144,10 @@ const getValueType = memoize((str: string) =>
     .find(s => s.localName === "type")
     .value.trim()
 );
-
+/**
+ * @summary Take xml element and return list of parameter values from it.
+ * @param xml Xml Element
+ */
 function parameterValueList(
   xml: Element
 ): [string, string | number | boolean, string][] {
@@ -187,13 +202,17 @@ function parameterValueList(
       return [param, parsed, valueType];
     });
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function GetParameterNames(methodRequest): string {
   return `<cwmp:GetParameterNames><ParameterPath>${
     methodRequest.parameterPath
   }</ParameterPath><NextLevel>${+methodRequest.nextLevel}</NextLevel></cwmp:GetParameterNames>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function GetParameterNamesResponse(xml): CpeGetResponse {
   return {
     name: "GetParameterNamesResponse",
@@ -202,7 +221,9 @@ function GetParameterNamesResponse(xml): CpeGetResponse {
     )
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function GetParameterValues(methodRequest): string {
   return `<cwmp:GetParameterValues><ParameterNames soap-enc:arrayType="xsd:string[${
     methodRequest.parameterNames.length
@@ -210,7 +231,9 @@ function GetParameterValues(methodRequest): string {
     .map(p => `<string>${p}</string>`)
     .join("")}</ParameterNames></cwmp:GetParameterValues>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function GetParameterValuesResponse(xml: Element): CpeGetResponse {
   return {
     name: "GetParameterValuesResponse",
@@ -219,7 +242,9 @@ function GetParameterValuesResponse(xml: Element): CpeGetResponse {
     )
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function SetParameterValues(methodRequest): string {
   const params = methodRequest.parameterList.map(p => {
     let val = p[1];
@@ -242,21 +267,27 @@ function SetParameterValues(methodRequest): string {
   )}</ParameterList><ParameterKey>${methodRequest.parameterKey ||
     ""}</ParameterKey></cwmp:SetParameterValues>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function SetParameterValuesResponse(xml: Element): CpeSetResponse {
   return {
     name: "SetParameterValuesResponse",
     status: parseInt(xml.children.find(n => n.localName === "Status").text)
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function AddObject(methodRequest): string {
   return `<cwmp:AddObject><ObjectName>${
     methodRequest.objectName
   }</ObjectName><ParameterKey>${methodRequest.parameterKey ||
     ""}</ParameterKey></cwmp:AddObject>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function AddObjectResponse(xml: Element): CpeSetResponse {
   let instanceNumber, status;
   for (const c of xml.children) {
@@ -276,42 +307,57 @@ function AddObjectResponse(xml: Element): CpeSetResponse {
     status: status
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function DeleteObject(methodRequest): string {
   return `<cwmp:DeleteObject><ObjectName>${
     methodRequest.objectName
   }</ObjectName><ParameterKey>${methodRequest.parameterKey ||
     ""}</ParameterKey></cwmp:DeleteObject>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function DeleteObjectResponse(xml: Element): CpeSetResponse {
   return {
     name: "DeleteObjectResponse",
     status: parseInt(xml.children.find(n => n.localName === "Status").text)
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function Reboot(methodRequest): string {
   return `<cwmp:Reboot><CommandKey>${methodRequest.commandKey ||
     ""}</CommandKey></cwmp:Reboot>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function RebootResponse(): CpeSetResponse {
   return {
     name: "RebootResponse"
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function FactoryReset(): string {
   return "<cwmp:FactoryReset></cwmp:FactoryReset>";
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ * @returns CpreSetResponse object which implements CpeSetResponse interface.
+ */
 function FactoryResetResponse(): CpeSetResponse {
   return {
     name: "FactoryResetResponse"
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function Download(methodRequest): string {
   return `<cwmp:Download><CommandKey>${methodRequest.commandKey ||
     ""}</CommandKey><FileType>${methodRequest.fileType}</FileType><URL>${
@@ -330,7 +376,11 @@ function Download(methodRequest): string {
     methodRequest.failureUrl || ""
   )}</FailureURL></cwmp:Download>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ * @param xml Xml Element
+ * @returns CpreSetResponse object which implements CpeSetResponse interface
+ */
 function DownloadResponse(xml: Element): CpeSetResponse {
   let status, startTime, completeTime;
   for (const c of xml.children) {
@@ -354,7 +404,11 @@ function DownloadResponse(xml: Element): CpeSetResponse {
     completeTime: completeTime
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ * @param xml Xml Element
+ * @returns InformRequest object which implements InformRequest interface
+ */
 function Inform(xml: Element): InformRequest {
   let retryCount, evnt, parameterList;
   const deviceId = {
@@ -392,15 +446,21 @@ function Inform(xml: Element): InformRequest {
     retryCount: retryCount
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function InformResponse(): string {
   return "<cwmp:InformResponse><MaxEnvelopes>1</MaxEnvelopes></cwmp:InformResponse>";
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function GetRPCMethods(): AcsResponse {
   return { name: "GetRPCMethods" };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function GetRPCMethodsResponse(methodResponse): string {
   return `<cwmp:GetRPCMethodsResponse><MethodList soap-enc:arrayType="xsd:string[${
     methodResponse.methodList.length
@@ -408,7 +468,11 @@ function GetRPCMethodsResponse(methodResponse): string {
     .map(m => `<string>${m}</string>`)
     .join("")}</MethodList></cwmp:GetRPCMethodsResponse>`;
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ * @param xml Xml Element
+ * @returns FaultStruct object which implements FaultStruct interface
+ */
 function TransferComplete(xml: Element): TransferCompleteRequest {
   let commandKey, _faultStruct, startTime, completeTime;
   for (const c of xml.children) {
@@ -436,22 +500,32 @@ function TransferComplete(xml: Element): TransferCompleteRequest {
     completeTime: completeTime
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function TransferCompleteResponse(): string {
   return "<cwmp:TransferCompleteResponse></cwmp:TransferCompleteResponse>";
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function RequestDownload(xml: Element): CpeRequest {
   return {
     name: "RequestDownload",
     fileType: xml.children.find(n => n.localName === "FileType").text
   };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ */
 function RequestDownloadResponse(): string {
   return "<cwmp:RequestDownloadResponse></cwmp:RequestDownloadResponse>";
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ * @param xml Xml Element
+ * @returns FaultStruct object which implements FaultStruct interface
+ */
 function faultStruct(xml: Element): FaultStruct {
   let faultCode, faultString, setParameterValuesFault: SpvFault[], pn, fc, fs;
   for (const c of xml.children) {
@@ -487,7 +561,11 @@ function faultStruct(xml: Element): FaultStruct {
 
   return { faultCode, faultString, setParameterValuesFault };
 }
-
+/**
+ * Function to be used by SOAP Request or Response depending on type of request made
+ * @param xml 
+ * @returns CpeFault object 
+ */
 function fault(xml: Element): CpeFault {
   let faultCode, faultString, detail;
   for (const c of xml.children) {
@@ -506,7 +584,13 @@ function fault(xml: Element): CpeFault {
 
   return { faultCode, faultString, detail };
 }
-
+/**
+ * @summary Make a SOAP request
+ * @param body Body
+ * @param cwmpVersion sessionContext.cwmp
+ * @param warn warnings
+ * @returns Returns a remote procedure call object
+ */
 export function request(body: string, cwmpVersion, warn): SoapMessage {
   warnings = warn;
 
@@ -655,11 +739,15 @@ const namespacesAttrs = {
     .map(([k, v]) => `xmlns:${k}="${v}"`)
     .join(" ")
 };
-
+/**
+ * @summary get Response for rpc request
+ * @param rpc rpc object passed in request
+ * @returns response 
+ */
 export function response(rpc): { code: number; headers: {}; data: string } {
   const headers = {
     Server: SERVER_NAME,
-    SOAPServer: SERVER_NAME
+    SOAPSOAPServer: SERVER_NAME
   };
 
   if (!rpc) return { code: 204, headers: headers, data: "" };

@@ -29,11 +29,19 @@ import * as extensions from "../lib/extensions";
 import * as cache from "../lib/cache";
 import { version as VERSION } from "../package.json";
 
+/** Initialize logging for cwmp service */
 logger.init("cwmp", VERSION);
-
+/**
+ * Get Url address & port for cwmp service from configurations
+ */
 const SERVICE_ADDRESS = config.get("CWMP_INTERFACE");
 const SERVICE_PORT = config.get("CWMP_PORT");
 
+/**
+ * Disconnect connections from db 
+ * Kill all process &
+ * Disconnect from childprocesses cluster
+ */
 function exitWorkerGracefully(): void {
   setTimeout(exitWorkerUngracefully, 5000).unref();
   Promise.all([
@@ -43,7 +51,9 @@ function exitWorkerGracefully(): void {
     cluster.worker.disconnect()
   ]).catch(exitWorkerUngracefully);
 }
-
+/**
+ * Kill All connections forcefully
+ */
 function exitWorkerUngracefully(): void {
   extensions.killAll().then(() => {
     process.exit(1);
@@ -51,6 +61,7 @@ function exitWorkerUngracefully(): void {
 }
 
 if (!cluster.worker) {
+  //Get count of child processes
   const WORKER_COUNT = config.get("CWMP_WORKER_PROCESSES");
 
   logger.info({
@@ -97,6 +108,10 @@ if (!cluster.worker) {
       .catch(exitWorkerUngracefully);
   });
 
+// Connect DB & Caching and start cwmp service (server)
+/**
+ * initPromise = Promise returned after all connections made server started
+ */
   const initPromise = Promise.all([db.connect(), cache.connect()])
     .then(() => {
       server.start(

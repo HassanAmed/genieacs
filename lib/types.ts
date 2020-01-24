@@ -23,9 +23,13 @@ import VersionedMap from "./versioned-map";
 import InstanceSet from "./instance-set";
 import { IncomingMessage, ServerResponse } from "http";
 import { Script } from "vm";
-
+/**
+ * Custome Type Alias to be used by other files.
+ */
 export type Expression = string | number | boolean | null | any[];
-
+/**
+ * Interface to predefine model.
+ */
 export interface Fault {
   code: string;
   message: string;
@@ -38,7 +42,9 @@ export interface Fault {
       };
   timestamp?: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface SessionFault extends Fault {
   timestamp: number;
   provisions: string[][];
@@ -47,25 +53,33 @@ export interface SessionFault extends Fault {
   retries?: number;
   expiry?: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Attributes {
   object?: [number, 1 | 0];
   writable?: [number, 1 | 0];
   value?: [number, [string | number | boolean, string]];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface AttributeTimestamps {
   object?: number;
   writable?: number;
   value?: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface AttributeValues {
   object?: boolean;
   writable?: boolean;
   value?: [string | number | boolean, string?];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface DeviceData {
   paths: PathSet;
   timestamps: VersionedMap<Path, number>;
@@ -73,7 +87,9 @@ export interface DeviceData {
   trackers: Map<Path, { [name: string]: number }>;
   changes: Set<string>;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export type VirtualParameterDeclaration = [
   Path,
   { path?: number; object?: number; writable?: number; value?: number }?,
@@ -84,7 +100,9 @@ export type VirtualParameterDeclaration = [
     value?: [string | number | boolean, string?];
   }?
 ];
-
+/**
+ * Interface to predefine model.
+ */
 export interface SyncState {
   refreshAttributes: {
     exist: Set<Path>;
@@ -106,7 +124,9 @@ export interface SyncState {
   reboot: number;
   factoryReset: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface SessionContext {
   sessionId?: string;
   timestamp: number;
@@ -150,7 +170,9 @@ export interface SessionContext {
   provisionsRet?: any[];
   doneTasks?: string[];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Task {
   _id: string;
   name: string;
@@ -162,7 +184,9 @@ export interface Task {
   targetFileName?: string;
   expiry?: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Operation {
   name: string;
   timestamp: number;
@@ -176,12 +200,16 @@ export interface Operation {
     targetFileName: string;
   };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface AcsRequest {
   name: string;
   next?: string;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface GetAcsRequest extends AcsRequest {
   name: "GetParameterNames" | "GetParameterValues";
   objectName?: string;
@@ -190,7 +218,9 @@ export interface GetAcsRequest extends AcsRequest {
   nextLevel?: boolean;
   instanceValues?: { [name: string]: string };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface SetAcsRequest extends AcsRequest {
   name:
     | "SetParameterValues"
@@ -212,36 +242,48 @@ export interface SetAcsRequest extends AcsRequest {
   fileName?: string;
   targetFileName?: string;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface CpeResponse {
   name: string;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface SpvFault {
   parameterName: string;
   faultCode: string;
   faultString: string;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface FaultStruct {
   faultCode: string;
   faultString: string;
   setParameterValuesFault?: SpvFault[];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface CpeFault {
   faultCode: string;
   faultString: string;
   detail?: FaultStruct;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface CpeGetResponse extends CpeResponse {
   name: "GetParameterNamesResponse" | "GetParameterValuesResponse";
   parameterList?:
     | [string, boolean][]
     | [string, string | number | boolean, string][];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface CpeSetResponse extends CpeResponse {
   name:
     | "SetParameterValuesResponse"
@@ -255,12 +297,16 @@ export interface CpeSetResponse extends CpeResponse {
   startTime?: number;
   completeTime?: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface CpeRequest {
   name: string;
   fileType?: string;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface InformRequest extends CpeRequest {
   name: "Inform";
   deviceId: {
@@ -273,7 +319,9 @@ export interface InformRequest extends CpeRequest {
   retryCount: number;
   parameterList: [string, string | number | boolean, string][];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface TransferCompleteRequest extends CpeRequest {
   name: "TransferComplete";
   commandKey?: string;
@@ -281,13 +329,17 @@ export interface TransferCompleteRequest extends CpeRequest {
   startTime?: number;
   completeTime?: number;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface AcsResponse {
   name: string;
   commandKey?: string;
   faultStruct?: FaultStruct;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface QueryOptions {
   projection?: any;
   skip?: number;
@@ -296,7 +348,9 @@ export interface QueryOptions {
     [param: string]: number;
   };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Declaration {
   path: Path;
   pathGet: number;
@@ -309,14 +363,18 @@ export interface Declaration {
   };
   defer: boolean;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export type Clear = [
   Path,
   number,
   { object?: number; writable?: number; value?: number }?,
   number?
 ];
-
+/**
+ * Interface to predefine model.
+ */
 export interface Preset {
   name: string;
   channel: string;
@@ -325,23 +383,33 @@ export interface Preset {
   precondition?: {};
   provisions: string[][];
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Provisions {
   [name: string]: { md5: string; script: Script };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface VirtualParameters {
   [name: string]: { md5: string; script: Script };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Files {
   [name: string]: { length: number; md5: string; contentType: string };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Users {
   [name: string]: { password: string; salt: string; roles: string[] };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface Permissions {
   [role: string]: {
     [access: number]: {
@@ -353,7 +421,9 @@ export interface Permissions {
     };
   };
 }
-
+/**
+ * Interface to predefine model.
+ */
 export type PermissionSet = {
   [resource: string]: {
     access: number;
@@ -361,11 +431,15 @@ export type PermissionSet = {
     filter: Expression;
   };
 }[];
-
+/**
+ * Interface to predefine model.
+ */
 export interface Config {
   [name: string]: Expression;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface UiConfig {
   filters: {};
   device: {};
@@ -376,7 +450,9 @@ export interface UiConfig {
   };
   pageSize?: Expression;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface SoapMessage {
   id: string;
   cwmpVersion: string;
@@ -385,7 +461,9 @@ export interface SoapMessage {
   cpeFault?: CpeFault;
   cpeResponse?: CpeResponse;
 }
-
+/**
+ * Interface to predefine model.
+ */
 export interface ScriptResult {
   fault: Fault;
   clear: Clear[];

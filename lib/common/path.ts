@@ -16,13 +16,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+/**
+ * String | Alias
+ */
 type Segments = (string | Alias)[];
 type Alias = [Path, string][];
 
 let cache1 = new Map<string, Path>();
 let cache2 = new Map<string, Path>();
-
+/**
+ * Path to be used in interface in types.ts
+ */
 export default class Path {
   public readonly segments: Segments;
   public readonly wildcard: number;

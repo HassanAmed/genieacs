@@ -22,10 +22,19 @@ import * as http from "http";
 import * as https from "https";
 import * as path from "path";
 import { ROOT_DIR } from "./config";
-
+/**
+ *  An Http/Https server
+ */
 let server: http.Server | https.Server;
+/**
+ *  An Http/Https listener.
+ */
 let listener: (...args) => void;
-
+/**
+ * @summary Closes server connection
+ * @param timeout time to close connection
+ * @param callback returns callback when connection successfuly closed
+ */
 function closeServer(timeout, callback): void {
   if (!server) return void callback();
 
@@ -50,7 +59,15 @@ function closeServer(timeout, callback): void {
     setTimeout(cb, 50);
   });
 }
-
+/**
+ * @summary Start server
+ * @param port port no
+ * @param networkInterface url (0.0.0.0)
+ * @param ssl ssl object containing ssl key and certificate
+ * @param _listener http listener 
+ * @param onConnection onconnection
+ * @param keepAliveTimeout Timer to keep connection live
+ */
 export function start(
   port,
   networkInterface,
@@ -81,7 +98,9 @@ export function start(
   if (keepAliveTimeout >= 0) server.keepAliveTimeout = keepAliveTimeout;
   server.listen(port, networkInterface);
 }
-
+/**
+ * @summary Stops server using fn closeServer() then returns promise
+ */
 export function stop(): Promise<void> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {

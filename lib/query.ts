@@ -18,7 +18,11 @@
  */
 
 import * as common from "./common";
-
+/**
+ * @summary Convert string to regular expressions 
+ * @param input input string
+ * @param flags Optional
+ */
 function stringToRegexp(input, flags?): RegExp | false {
   if (input.indexOf("*") === -1) return false;
 
@@ -32,7 +36,10 @@ function stringToRegexp(input, flags?): RegExp | false {
   output = output.replace(/[*]/, ".*");
   return new RegExp(output, flags);
 }
-
+/**
+ * @summary String Normalization convert string to array object
+ * @param input Input string to be normalized.
+ */
 function normalize(input): any {
   if (common.typeOf(input) === common.STRING_TYPE) {
     const vals = [input];
@@ -51,7 +58,10 @@ function normalize(input): any {
   }
   return input;
 }
-
+/**
+ * @summary Expae
+ * @param value 
+ */
 export function expandValue(value): any[] {
   if (common.typeOf(value) === common.ARRAY_TYPE) {
     let a = [];

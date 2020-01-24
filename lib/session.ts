@@ -51,7 +51,9 @@ import {
   Expression
 } from "./types";
 import { getRequestOrigin } from "./forwarded";
-
+/**
+ * To check types of virtualParameters
+ */
 const VALID_PARAM_TYPES = new Set([
   "xsd:int",
   "xsd:unsignedInt",
@@ -61,7 +63,9 @@ const VALID_PARAM_TYPES = new Set([
   "xsd:base64",
   "xsd:hexBinary"
 ]);
-
+/**
+ * Initialize a model for Device Data
+ */
 function initDeviceData(): DeviceData {
   return {
     paths: new PathSet(),
@@ -71,7 +75,13 @@ function initDeviceData(): DeviceData {
     changes: new Set()
   };
 }
-
+/**
+ * @description Initialize a session 
+ * @param deviceId Device ID
+ * @param cwmpVersion CwmpVersion
+ * @param timeout Timeout to init
+ * @returns SessionContext object that implemets sessionConetex interface
+ */
 export function init(
   deviceId: string,
   cwmpVersion: string,
@@ -99,7 +109,11 @@ export function init(
 
   return sessionContext;
 }
-
+/**
+ * @description Generate Rpc Id from sessionContext Object
+ * @param sessionContext sessionContext object
+ * @returns RpcID 
+ */
 function generateRpcId(sessionContext: SessionContext): string {
   return (
     sessionContext.timestamp.toString(16) +
@@ -107,7 +121,11 @@ function generateRpcId(sessionContext: SessionContext): string {
     ("0" + sessionContext.rpcCount.toString(16)).slice(-2)
   );
 }
-
+/**
+ * @description Returns configurations expression
+ * @param sessionContext sessionContext object
+ * @param exp Expression
+ */
 export function configContextCallback(
   sessionContext: SessionContext,
   exp: Expression
@@ -135,7 +153,12 @@ export function configContextCallback(
   }
   return exp;
 }
-
+/**
+ * @description Push Device data to rpc Request parameterlist and inform when done.
+ * @param sessionContext sessionContext object
+ * @param rpcReq rpc Request
+ * @returns Resloves promise and returns AcsResponse object
+ */
 export async function inform(
   sessionContext: SessionContext,
   rpcReq: InformRequest
@@ -264,7 +287,12 @@ export async function inform(
 
   return { name: "InformResponse" };
 }
-
+/**
+ * @description Transfers device data
+ * @param sessionContext sessionContext object
+ * @param rpcReq rpc Request
+ * @returns resolves promise and returns object
+ */
 export async function transferComplete(
   sessionContext: SessionContext,
   rpcReq: TransferCompleteRequest
@@ -389,7 +417,12 @@ export async function transferComplete(
     fault: null
   };
 }
-
+/**
+ * @description Revert Parameter Download Operation
+ * @param sessionContext sessionContext object
+ * @param instance Download instace
+ * @returns Promise on opetaion completion
+ */
 async function revertDownloadParameters(
   sessionContext: SessionContext,
   instance
@@ -423,7 +456,11 @@ async function revertDownloadParameters(
       device.clear(sessionContext.deviceData, c[0], c[1], c[2], c[3]);
   }
 }
-
+/**
+ * @description Set timeout to operations and revert if not done in due time.
+ * @param sessionContext sessionContext object.
+ * @returns resovles a promise and return object containing faults and opertaions.
+ */
 export async function timeoutOperations(
   sessionContext: SessionContext
 ): Promise<{ faults: Fault[]; operations: Operation[] }> {
@@ -469,7 +506,12 @@ export async function timeoutOperations(
 
   return { faults, operations };
 }
-
+/**
+ * @description Add New Provisons
+ * @param sessionContext sessionContext object
+ * @param channel Channel
+ * @param provisions Provisions to add
+ */
 export function addProvisions(
   sessionContext: SessionContext,
   channel,
@@ -528,7 +570,10 @@ export function addProvisions(
     sessionContext.provisions.push(provision);
   }
 }
-
+/**
+ * @description Clear all provisions
+ * @param sessionContext sessionContext object
+ */
 export function clearProvisions(sessionContext: SessionContext): void {
   // Multiply by two because every iteration is two
   // phases: read and update
@@ -562,7 +607,13 @@ export function clearProvisions(sessionContext: SessionContext): void {
   sessionContext.revisions = [0];
   sessionContext.extensionsCache = {};
 }
-
+/**
+ * 
+ * @param sessionContext sessionContext object
+ * @param provisions Provision
+ * @param startRevision 
+ * @param endRevision 
+ */
 async function runProvisions(
   sessionContext: SessionContext,
   provisions: any[][],
@@ -641,7 +692,13 @@ async function runProvisions(
     returnValue: null
   };
 }
-
+/**
+ * @description Run new virtual params if no error => save if error found => faults 
+ * @param sessionContext sessionContext object
+ * @param provisions provisions
+ * @param startRevision revsion number used by fn run() sandbox.ts 
+ * @param endRevision end revsion number
+ */
 async function runVirtualParameters(
   sessionContext: SessionContext,
   provisions: any[][],
@@ -759,7 +816,12 @@ async function runVirtualParameters(
     returnValue: done ? virtualParameterUpdates : null
   };
 }
-
+/**
+ * @description Run new declarations 
+ * @param sessionContext sessionContext object
+ * @param declarations declaration
+ * @returns Return processed declarations
+ */
 function runDeclarations(
   sessionContext: SessionContext,
   declarations: Declaration[]
@@ -795,7 +857,11 @@ function runDeclarations(
   const allVirtualParameters = localCache.getVirtualParameters(
     sessionContext.cacheSnapshot
   );
-
+/**
+ * @description Assign timestamp of attribute having max timestamp to all other attirbutes
+ * @param p path
+ * @param attrs AttributeTimestamps
+ */
   function mergeAttributeTimestamps(p: Path, attrs: AttributeTimestamps): void {
     let cur = allDeclareAttributeTimestamps.get(p);
     if (!cur) {
@@ -807,7 +873,12 @@ function runDeclarations(
       allDeclareAttributeTimestamps.set(p, cur);
     }
   }
-
+/**
+ * @description Merge all attributes values
+ * @param p path
+ * @param attrs Atrribute Values
+ * @param defer bool
+ */
   function mergeAttributeValues(
     p: Path,
     attrs: AttributeValues,
@@ -974,7 +1045,12 @@ function runDeclarations(
     allDeclareAttributeValues
   );
 }
-
+/**
+ * @description Make an rpc request
+ * @param sessionContext sessionContext object 
+ * @param _declarations declarations
+ * @returns An object containg newly generated rpcID.
+ */
 export async function rpcRequest(
   sessionContext: SessionContext,
   _declarations: Declaration[]
@@ -1489,7 +1565,10 @@ export async function rpcRequest(
 
   return rpcRequest(sessionContext, null);
 }
-
+/**
+ * @description Generate and return an rpc request 
+ * @param sessionContext sessionContext object
+ */
 function generateGetRpcRequest(sessionContext: SessionContext): GetAcsRequest {
   const syncState = sessionContext.syncState;
   if (!syncState) return null;
@@ -1648,7 +1727,10 @@ function generateGetRpcRequest(sessionContext: SessionContext): GetAcsRequest {
   }
   return null;
 }
-
+/**
+ * @description generate and intialize rpc request new instance
+ * @param sessionContext sessionContext object
+ */
 function generateSetRpcRequest(sessionContext: SessionContext): SetAcsRequest {
   const syncState = sessionContext.syncState;
   if (!syncState) return null;
@@ -1811,7 +1893,11 @@ function generateSetRpcRequest(sessionContext: SessionContext): SetAcsRequest {
 
   return null;
 }
-
+/**
+ * Generate and get Virtual Param Provision
+ * @param sessionContext sessionContext object
+ * @param virtualParameterDeclarations vparams declaration []
+ */
 function generateGetVirtualParameterProvisions(
   sessionContext: SessionContext,
   virtualParameterDeclarations: VirtualParameterDeclaration[]
@@ -1857,7 +1943,11 @@ function generateGetVirtualParameterProvisions(
   }
   return provisions;
 }
-
+/**
+ * Generate and set Virtual Param Provision
+ * @param sessionContext sessionContext object
+ * @param virtualParameterDeclarations vparams declaration []
+ */
 function generateSetVirtualParameterProvisions(
   sessionContext: SessionContext,
   virtualParameterDeclarations: VirtualParameterDeclaration[]
@@ -1912,7 +2002,14 @@ function generateSetVirtualParameterProvisions(
 
   return provisions;
 }
-
+/**
+ * @description Process declarations push to virtualParameterDeclations[]
+ * @param sessionContext sessionContext object
+ * @param allDeclareTimestamps Timestamps
+ * @param allDeclareAttributeTimestamps AttributeTimestamps
+ * @param allDeclareAttributeValues AttributeValues
+ * @returns return virtualParameterDeclations[] object
+ */
 function processDeclarations(
   sessionContext: SessionContext,
   allDeclareTimestamps,
@@ -2193,7 +2290,16 @@ function processDeclarations(
 
   return virtualParameterDeclarations;
 }
-
+/**
+ * @description Process Instances
+ * @param sessionContext sessionContext object
+ * @param parent Path
+ * @param parameters holds device data
+ * @param keys keys
+ * @param minInstances min instaces 
+ * @param maxInstances max instaces
+ * @param defer declaration.defer property of declaration
+ */
 function processInstances(
   sessionContext: SessionContext,
   parent: Path,
@@ -2254,7 +2360,13 @@ function processInstances(
     instancesToCreate.add(JSON.parse(JSON.stringify(keys)));
   }
 }
-
+/**
+ * /@description get Rpc response 
+ * @param sessionContext sessionObject
+ * @param id ID 
+ * @param _rpcRes Cpe Response
+ * @returns Response
+ */
 export async function rpcResponse(
   sessionContext: SessionContext,
   id: string,
@@ -2588,7 +2700,13 @@ export async function rpcResponse(
       device.clear(sessionContext.deviceData, c[0], c[1], c[2], c[3]);
   }
 }
-
+/**
+ * @description Get rpc fault
+ * @param sessionContext sessionContext instance
+ * @param id rpc ID
+ * @param faultResponse cpe Fault
+ * @returns resolves promise and returns rpc fault object
+ */
 export async function rpcFault(
   sessionContext: SessionContext,
   id: string,
@@ -2643,7 +2761,9 @@ export async function rpcFault(
 
   return fault;
 }
-
+/**
+ * @description Deserialize sessionContextString
+ */
 export async function deserialize(
   sessionContextString
 ): Promise<SessionContext> {
@@ -2670,7 +2790,10 @@ export async function deserialize(
 
   return sessionContext;
 }
-
+/**
+ * @description serialize sessionContext
+ * @returns sessionContextString & resolves promise
+ */
 export async function serialize(
   sessionContext: SessionContext
 ): Promise<string> {

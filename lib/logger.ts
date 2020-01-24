@@ -24,15 +24,29 @@ import * as config from "./config";
 import { getRequestOrigin } from "./forwarded";
 
 const REOPEN_EVERY = 60000;
-
+/**
+ * @summary Get log format type from config.ts (JSON or Simple)
+ */
 const LOG_FORMAT = config.get("LOG_FORMAT");
+/**
+ * @summary Get log format type from config.ts (JSON or Simple)
+ */
 const ACCESS_LOG_FORMAT = config.get("ACCESS_LOG_FORMAT") || LOG_FORMAT;
-
+/**
+ * @summary Object to store metadeta for logs like pid hostname etc
+ */
 const defaultMeta: { [name: string]: any } = {};
-
+/**
+ * @summary True = Enable system log False = Disable system logs 
+ */
 let LOG_SYSTEMD = false;
+/**
+ * @summary True = Enable system access logs False = Disable system access logs 
+ */
 let ACCESS_LOG_SYSTEMD = false;
-
+/**
+ * @summary File to keep logs 
+ */
 let LOG_FILE, ACCESS_LOG_FILE;
 
 declare global {
@@ -43,7 +57,9 @@ declare global {
     }
   }
 }
-
+/**
+ * @summary filesystem module - used by logger.ts
+ */
 declare module "fs" {
   interface WriteStream {
     fd?: number;
@@ -56,6 +72,9 @@ let accessLogStream = fs.createWriteStream(null, { fd: process.stdout.fd });
 let accessLogStat = fs.fstatSync(accessLogStream.fd);
 
 // Reopen if original files have been moved (e.g. logrotate)
+/**
+ * @summary True = Enable system log False = Disable system logs 
+ */
 function reopen(): void {
   let counter = 1;
 
@@ -104,7 +123,11 @@ function reopen(): void {
   if (--counter === 0)
     setTimeout(reopen, REOPEN_EVERY - (Date.now() % REOPEN_EVERY)).unref();
 }
-
+/**
+ * @summary Initialize logging for provided service - assign meta data paths files etc 
+ * @param service cwmp,fs,nbi name of service
+ * @param version 
+ */
 export function init(service, version): void {
   defaultMeta.hostname = os.hostname();
   defaultMeta.pid = process.pid;
@@ -126,7 +149,9 @@ export function init(service, version): void {
     accessLogStat = fs.fstatSync(accessLogStream.fd);
   }
 
-  // Determine if logs are going to journald
+/**
+ * @summary Determine if logs are going to journald
+ */
   const JOURNAL_STREAM = process.env["JOURNAL_STREAM"];
 
   if (JOURNAL_STREAM) {
@@ -141,12 +166,18 @@ export function init(service, version): void {
     // Can't use setInterval as we need all workers to cehck at the same time
     setTimeout(reopen, REOPEN_EVERY - (Date.now() % REOPEN_EVERY)).unref();
 }
-
+/**
+ * @summary Terminate log stream connections
+ */
 export function close(): void {
   accessLogStream.end();
   logStream.end();
 }
-
+/**
+ * @summary Takes a nested object and return flattened object
+ * @param details object containing session details
+ * @returns A flattened object
+ */
 export function flatten(details): {} {
   if (details.sessionContext) {
     details.deviceId = details.sessionContext.deviceId;
@@ -211,7 +242,11 @@ export function flatten(details): {} {
 
   return details;
 }
-
+/**
+ * @summary Fn to start logging in JSON format. Used by log() fn
+ * @param details Object containing configs (like severity Address user etc)
+ * @param systemd System components
+ */
 function formatJson(details, systemd): string {
   if (systemd) {
     let severity = "";
@@ -224,7 +259,11 @@ function formatJson(details, systemd): string {
 
   return `${JSON.stringify(flatten(details))}${os.EOL}`;
 }
-
+/**
+ * @summary Fn to start logging in standard logging format. Used by log() fn
+ * @param details Object containing configs (like severity Address user etc)
+ * @param systemd System components
+ */
 function formatSimple(details, systemd): string {
   const skip = {
     user: true,
@@ -269,7 +308,10 @@ function formatSimple(details, systemd): string {
     details.message
   }${meta}${os.EOL}`;
 }
-
+/**
+ * @summary Start logging based on severity (info, warning, error)
+ * @param details Configration Object
+ */
 function log(details): void {
   details.timestamp = new Date().toISOString();
   if (LOG_FORMAT === "json") {
@@ -279,22 +321,34 @@ function log(details): void {
     logStream.write(formatSimple(details, LOG_SYSTEMD));
   }
 }
-
+/**
+ * @summary Set logging severity to 'info logs' and start logging by calling fn log()
+ * @param details Configration Object
+ */
 export function info(details): void {
   details.severity = "info";
   log(details);
 }
-
+/**
+ * @summary Set logging severity to 'warn logs' and start logging by calling fn log()
+ * @param details Configration Object
+ */
 export function warn(details): void {
   details.severity = "warn";
   log(details);
 }
-
+/**
+ * @summary Set logging severity to 'error logs' and start logging by calling fn log()
+ * @param details Configration Object
+ */
 export function error(details): void {
   details.severity = "error";
   log(details);
 }
-
+/**
+ * @summary Start logging access logs based on severity
+ * @param details Configration Object
+ */
 export function accessLog(details): void {
   details.timestamp = new Date().toISOString();
   if (ACCESS_LOG_FORMAT === "json") {
@@ -304,17 +358,26 @@ export function accessLog(details): void {
     accessLogStream.write(formatSimple(details, ACCESS_LOG_SYSTEMD));
   }
 }
-
+/**
+ * @summary Set logging severity to 'info logs' and start logging by calling fn accesslog()
+ * @param details Configration Object
+ */
 export function accessInfo(details): void {
   details.severity = "info";
   accessLog(details);
 }
-
+/**
+ * @summary Set logging severity to 'warn logs' and start logging by calling fn accesslog()
+ * @param details Configration Object
+ */
 export function accessWarn(details): void {
   details.severity = "warn";
   accessLog(details);
 }
-
+/**
+ * @summary Set logging severity to 'error logs' and start logging by calling fn accesslog()
+ * @param details Configration Object
+ */
 export function accessError(details): void {
   details.severity = "error";
   accessLog(details);
