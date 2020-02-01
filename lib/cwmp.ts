@@ -1234,7 +1234,7 @@ async function processRequest(
   }
 }
 /**
- * @description Listener to handle session messages/requests (only POST requests allowed on this server)
+ * @description Listener to handle session messages/requests 
  * @param httpRequest IncomingMessage
  * @param httpResponse ServerResponse
  */

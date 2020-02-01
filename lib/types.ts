@@ -24,7 +24,7 @@ import InstanceSet from "./instance-set";
 import { IncomingMessage, ServerResponse } from "http";
 import { Script } from "vm";
 /**
- * Custom Type Alias that can be of any dataType of string,number,boolean,null,any[]
+ * @description Custom Type Alias that can be of any dataType of string,number,boolean,null,any[]
  * Note: Basic functions custom implementation is provided in expressions.ts for this custom
  * expression data type
  */

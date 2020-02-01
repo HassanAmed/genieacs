@@ -20,5 +20,11 @@
       "./test/**/*",
       "./build/**/*",
       "./tools/.*.ts"
-  ]
+  ],
+  "typedocOptions": {
+    "mode": "module",
+    "out": "docs/moduledocs/",
+    "excludeNotExported":false,
+    "ignoreCompilerErrors": true
+}
 }
