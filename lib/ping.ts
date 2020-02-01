@@ -29,7 +29,9 @@ interface Ping {
   max: number;
   mdev: number;
 }
-
+/**
+ * @description Ping server
+ */
 export function ping(
   host: string,
   callback: (err, res?, stdout?) => void

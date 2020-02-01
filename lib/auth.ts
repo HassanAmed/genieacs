@@ -18,7 +18,11 @@
  */
 
 import { createHash, randomBytes, pbkdf2 } from "crypto";
-
+/**
+ * @summary Parse header of requests for authorization
+ * @param str Stores the header
+ * @returns Parsed Header as response object
+ */
 function parseHeaderFeilds(str: string): {} {
   const res = {};
   const parts = str.split(",");
@@ -51,7 +55,10 @@ function parseHeaderFeilds(str: string): {} {
   }
   return res;
 }
-
+/**
+ * @summary Parse Authorization Header to be usec by fn authenticate() in cwmp.ts
+ * @param authHeader Request Header for authorization
+ */
 export function parseAuthorizationHeader(authHeader): { method: string } {
   authHeader = authHeader.trim();
   const method = authHeader.split(" ", 1)[0];
@@ -73,7 +80,10 @@ export function parseAuthorizationHeader(authHeader): { method: string } {
 
   return res;
 }
-
+/**
+ * @description Parse WWW Header
+ * @param authHeader Header
+ */
 export function parseWwwAuthenticateHeader(authHeader): {} {
   authHeader = authHeader.trim();
   const method = authHeader.split(" ", 1)[0];
@@ -81,11 +91,18 @@ export function parseWwwAuthenticateHeader(authHeader): {} {
   Object.assign(res, parseHeaderFeilds(authHeader.slice(method.length + 1)));
   return res;
 }
-
+/**
+ * @summary Set auth method as basic authentication for given user.
+ * @param username Name 
+ * @param password Password
+ */
 export function basic(username, password): string {
   return "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
 }
-
+/**
+ * @summary digest is an alias for hashing md5 = message digest 5
+ * @returns Takes user data name,password,nonce etc and return its hash
+ */
 export function digest(
   username: string | Buffer,
   realm: string | Buffer,
@@ -141,7 +158,9 @@ export function digest(
 
   return hash.digest("hex");
 }
-
+/**
+ * @summary Create authentication string by hashing data and add to auth header
+ */
 export function solveDigest(
   username: string | Buffer,
   password: string | Buffer,
@@ -184,7 +203,11 @@ export function solveDigest(
 
   return authString;
 }
-
+/**
+ * @summary Salt is added to better the hashing 
+ * see https://en.wikipedia.org/wiki/Salt_(cryptography)
+ * @param length 64
+ */
 export function generateSalt(length): Promise<string> {
   return new Promise((resolve, reject) => {
     randomBytes(length, (err, rand) => {
@@ -193,7 +216,11 @@ export function generateSalt(length): Promise<string> {
     });
   });
 }
-
+/**
+ * @summary Generate password hash
+ * @param pass password
+ * @param salt salt
+ */
 export function hashPassword(pass, salt): Promise<string> {
   return new Promise((resolve, reject) => {
     pbkdf2(pass, salt, 10000, 128, "sha512", (err, hash) => {

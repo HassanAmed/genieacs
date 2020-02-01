@@ -1,33 +1,19 @@
-/**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 interface Instance {
   [name: string]: string;
 }
-
+/**
+ * @description Class for creating process instances
+ */
 export default class InstanceSet {
   private set: Set<Instance>;
 
   public constructor() {
     this.set = new Set();
   }
-
+/**
+ * @description Add new instace 
+ * @param instance 
+ */
   public add(instance: Instance): void {
     this.set.add(instance);
   }
@@ -71,7 +57,10 @@ export default class InstanceSet {
 
     return res;
   }
-
+/**
+ * create a subset of insatances out of present instace.
+ * @param instance 
+ */
   public subset(instance: Instance): Instance[] {
     const res = [];
 
@@ -112,7 +101,9 @@ export default class InstanceSet {
   public [Symbol.iterator](): IterableIterator<Instance> {
     return this.set.values();
   }
-
+/**
+ * @description Custom for each function
+ */
   public forEach(callback: (instance: Instance) => void): void {
     this.set.forEach(callback);
   }

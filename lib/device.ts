@@ -33,7 +33,10 @@ function parseBool(v): boolean {
     return false;
   else return null;
 }
-
+/**
+ * @description Sanitize parameters by parsing
+ * @param parameterValue Parameter
+ */
 export function sanitizeParameterValue(
   parameterValue: [string | number | boolean, string]
 ): [string | number | boolean, string?] {
@@ -82,7 +85,9 @@ export function sanitizeParameterValue(
 
   return parameterValue;
 }
-
+/**
+ * @description Get Alias Declarations
+ */
 export function getAliasDeclarations(
   path: Path,
   timestamp: number,
@@ -117,7 +122,9 @@ export function getAliasDeclarations(
 
   return decs;
 }
-
+/**
+ * @description unpack device data
+ */
 export function unpack(
   deviceData: DeviceData,
   path: Path,
@@ -187,7 +194,9 @@ export function unpack(
 
   return allMatches;
 }
-
+/**
+ * @description clear everything from device data
+ */
 export function clear(
   deviceData,
   path,
@@ -371,7 +380,9 @@ export function set(
 
   return toClear;
 }
-
+/**
+ * @description track device
+ */
 export function track(
   deviceData: DeviceData,
   path: Path,
@@ -392,7 +403,11 @@ export function track(
 
   cur[marker] |= f;
 }
-
+/**
+ * @description clear trackers from device data
+ * @param deviceData device data 
+ * @param tracker tracker
+ */
 export function clearTrackers(deviceData: DeviceData, tracker): void {
   if (Array.isArray(tracker)) {
     for (const v of deviceData.trackers.values())

@@ -623,7 +623,7 @@ export function deleteResource(resourceType, id): Promise<void> {
 
 export function putResource(resourceType, id, object): Promise<void> {
   for (const k in object) if (object[k] === undefined) object[k] = null;
-
+  console.log(resourceType);
   return xhrRequest({
     method: "PUT",
     url: `/api/${resourceType}/${encodeURIComponent(id)}`,

@@ -20,7 +20,9 @@
 import { resolve } from "path";
 import { readFileSync, existsSync } from "fs";
 
-// Find project root directory
+/**
+ * @summary ROOT_DIR stores project root directory
+ */
 export let ROOT_DIR = resolve(__dirname, "..");
 while (!existsSync(`${ROOT_DIR}/package.json`)) {
   const d = resolve(ROOT_DIR, "..");
@@ -33,7 +35,10 @@ while (!existsSync(`${ROOT_DIR}/package.json`)) {
 
 // For compatibility with v1.1
 let configDir, cwmpSsl, nbiSsl, fsSsl, uiSsl, fsHostname;
-
+/**
+ * @summary This object stores all default network configurations of services(cwmp, nbi, fs)
+ * like thier URL, PORT, SSL_Key etc.
+ */
 const options = {
   EXT_DIR: { type: "path", default: resolve(ROOT_DIR, "config/ext") },
   MONGODB_CONNECTION_URL: {
@@ -102,9 +107,18 @@ const options = {
   // Should probably never be changed
   DEVICE_ONLINE_THRESHOLD: { type: "int", default: 4000 }
 };
-
+/**
+ * @summary Object storing actual network configuration. This object is used by setConfig fn.
+ */
 const allConfig: { [name: string]: string | number } = {};
-
+/**
+ * @summary Function to set a specific network configuration out of all defined in options[object]. 
+ * @param name Provide the name of configuration
+ * @param value Provide value of configuration
+ * @param commandLineArgument false: when config is set. True: when config unset.
+ * @returns true: after setting config or if config is preset
+ * @returns false: when config is not set for some reason (e.g wrong name provided) 
+ */
 function setConfig(name, value, commandLineArgument = false): boolean {
   if (allConfig[name] != null) return true;
 
@@ -164,7 +178,12 @@ function setConfig(name, value, commandLineArgument = false): boolean {
     setConfig("GPV_BATCH_SIZE", value);
 
   if (name === "FS_IP" || name === "fs-ip") setConfig("FS_HOSTNAME", value);
-
+/**
+ * @summary Typecasting - used for removing irregularities in types of configuration values 
+ * @param val Provide the value of configuration
+ * @param type Provide current type of value of configuration
+ * @returns new type of val
+ */
   function cast(val, type): string | number | boolean {
     switch (type) {
       case "int":
@@ -210,6 +229,10 @@ function setConfig(name, value, commandLineArgument = false): boolean {
 }
 
 // Command line arguments
+/**
+ * @summary argv is argument vector passed  in command line argv[0] & argv[1] are paths
+ * so we discard them. 
+ */
 const argv = process.argv.slice(2);
 while (argv.length) {
   const arg = argv.shift();
@@ -277,6 +300,11 @@ if (fsHostname) {
 for (const [k, v] of Object.entries(options))
   if (v["default"] != null) setConfig(k, v["default"]);
 
+/**
+ * @summary Function to get a specific configuration 
+ * @param optionName Provide the name of configuration
+ * @returns value of configuration.
+ */
 export function get(
   optionName: string,
   deviceId?: string
@@ -307,7 +335,11 @@ export function get(
 
   return null;
 }
-
+/**
+ * @summary Function to getDefault configuration 
+ * @param optionName Provide the name of configuration
+ * @returns default value of configuration.
+ */
 export function getDefault(optionName): string | number | boolean {
   const option = options[optionName];
   if (!option) return null;

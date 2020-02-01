@@ -48,7 +48,10 @@ for (const str of FORWARDED_HEADER.split(",").map(s => s.trim())) {
     }
   }
 }
-
+/**
+ * Parse Forwarded Header and return parsed data
+ * @param str Header
+ */
 function parseForwardedHeader(str: string): { [name: string]: string } {
   str = str.toLowerCase();
   const res: { [name: string]: string } = {};
@@ -93,7 +96,10 @@ function parseForwardedHeader(str: string): { [name: string]: string } {
 
   return res;
 }
-
+/**
+ * @description Get origin of request
+ * @param request request
+ */
 export function getRequestOrigin(request: IncomingMessage): RequestOrigin {
   let origin = cache.get(request);
   if (!origin) {

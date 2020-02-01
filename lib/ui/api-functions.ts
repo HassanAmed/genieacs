@@ -28,7 +28,10 @@ import {
   connectionRequest,
   deleteDevice
 } from "../api-functions";
-
+/**
+ * @description Function used by apis in api.ts to delete fault
+ * @param id fault id
+ */
 async function deleteFault(id): Promise<void> {
   const deviceId = id.split(":", 1)[0];
   const channel = id.slice(deviceId.length + 1);
@@ -42,7 +45,11 @@ async function deleteFault(id): Promise<void> {
 
   await del(`${deviceId}_tasks_faults_operations`);
 }
-
+/**
+ * @description Function used by delete apis to delete resource
+ * @param resource resource
+ * @param id resource id
+ */
 export async function deleteResource(resource, id): Promise<void> {
   switch (resource) {
     case "devices":
@@ -84,7 +91,13 @@ export async function deleteResource(resource, id): Promise<void> {
 
   await del("presets_hash");
 }
-
+/**
+ * @description Function used by apis to post a new Task
+ * @param deviceId 
+ * @param tasks 
+ * @param timeout 
+ * @param device 
+ */
 export async function postTasks(
   deviceId,
   tasks,
@@ -138,7 +151,9 @@ export async function postTasks(
 
   return { connectionRequest: "OK", tasks: statuses };
 }
-
+/**
+ * @description Interface for ping response
+ */
 interface PingResponse {
   packetsTransmitted: number;
   packetsReceived: number;
@@ -148,7 +163,12 @@ interface PingResponse {
   max: number;
   mdev: number;
 }
-
+/**
+ * @description function used by api to edit a resource
+ * @param resource resource 
+ * @param id resource Id
+ * @param data data
+ */
 export async function putResource(resource, id, data): Promise<void> {
   if (resource === "presets") {
     await db.putPreset(id, data);
@@ -168,7 +188,12 @@ export async function putResource(resource, id, data): Promise<void> {
 
   await del("presets_hash");
 }
-
+/**
+ * @description Local Authorization 
+ * @param snapshot Db snapshot
+ * @param username username
+ * @param password password
+ */
 export function authLocal(snapshot, username, password): Promise<boolean> {
   return new Promise((resolve, reject) => {
     const users = getUsers(snapshot);

@@ -24,7 +24,11 @@ import { GridFSBucket } from "mongodb";
 import * as db from "./db";
 import * as logger from "./logger";
 import { getRequestOrigin } from "./forwarded";
-
+/**
+ * @description Listener for fs server only Get Method allowed on this server
+ * @param request Incoming Message
+ * @param response Server Response
+ */
 export function listener(
   request: IncomingMessage,
   response: ServerResponse

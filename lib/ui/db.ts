@@ -57,7 +57,12 @@ function getClient(): Promise<MongoClient> {
 
   return clientPromise;
 }
-
+/**
+ * @description Caching 
+ * @param key key 
+ * @param valueGetter value  
+ * @param ttl Time to live (caching till this time)
+ */
 export function cache<T>(key, valueGetter: () => Promise<T>, ttl): Promise<T> {
   return new Promise((resolve, reject) => {
     getClient()
@@ -90,7 +95,9 @@ export function cache<T>(key, valueGetter: () => Promise<T>, ttl): Promise<T> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Query Db
+ */
 export function query(
   resource,
   filter,
@@ -195,7 +202,9 @@ export function query(
     });
   });
 }
-
+/**
+ * @description Function to count any resource
+ */
 export function count(resource, filter): Promise<number> {
   let q;
   filter = expression.evaluate(filter, null, Date.now());
@@ -224,7 +233,9 @@ export function count(resource, filter): Promise<number> {
     });
   });
 }
-
+/**
+ * @description function to update tags in db
+ */
 export function updateDeviceTags(deviceId, tags): Promise<void> {
   return new Promise((resolve, reject) => {
     const add = [];
@@ -272,7 +283,9 @@ function putResource(resource, id, object): Promise<void> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Edit a resource
+ */
 function deleteResource(resource, id): Promise<void> {
   return new Promise((resolve, reject) => {
     getClient()
@@ -288,16 +301,24 @@ function deleteResource(resource, id): Promise<void> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Edit a preset 
+ */
 export function putPreset(id, object): Promise<void> {
   object = mongodbFunctions.preProcessPreset(object);
   return putResource("presets", id, object);
 }
-
+/**
+ * @description Delete a preset
+ */
 export function deletePreset(id): Promise<void> {
   return deleteResource("presets", id);
 }
-
+/**
+ * @description Edit a provision
+ * @param id 
+ * @param object 
+ */
 export function putProvision(id, object): Promise<void> {
   if (!object.script) object.script = "";
   try {
@@ -307,11 +328,18 @@ export function putProvision(id, object): Promise<void> {
   }
   return putResource("provisions", id, object);
 }
-
+/**
+ * @description Delete a provision
+ * @param id 
+ */
 export function deleteProvision(id): Promise<void> {
   return deleteResource("provisions", id);
 }
-
+/**
+ * @description Edit a virtual Param
+ * @param id 
+ * @param object 
+ */
 export function putVirtualParameter(id, object): Promise<void> {
   if (!object.script) object.script = "";
   try {
@@ -321,27 +349,48 @@ export function putVirtualParameter(id, object): Promise<void> {
   }
   return putResource("virtualParameters", id, object);
 }
-
+/**
+ * @description Delete Virtual Parameter
+ * @param id 
+ */
 export function deleteVirtualParameter(id): Promise<void> {
   return deleteResource("virtualParameters", id);
 }
-
+/**
+ * @description Edit a config
+ * @param id 
+ * @param object 
+ */
 export function putConfig(id, object): Promise<void> {
   return putResource("config", id, object);
 }
-
+/**
+ * @description Delete a configuration
+ * @param id 
+ */
 export function deleteConfig(id): Promise<void> {
   return deleteResource("config", id);
 }
-
+/**
+ * @description Edit a permission
+ * @param id 
+ * @param object 
+ */
 export function putPermission(id, object): Promise<void> {
   return putResource("permissions", id, object);
 }
-
+/**
+ * Delete permission from Db
+ * @param id 
+ */
 export function deletePermission(id): Promise<void> {
   return deleteResource("permissions", id);
 }
-
+/**
+ * @description Edit a user
+ * @param id 
+ * @param object 
+ */
 export function putUser(id, object): Promise<void> {
   return new Promise((resolve, reject) => {
     getClient()
@@ -361,11 +410,19 @@ export function putUser(id, object): Promise<void> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Delet a user
+ * @param id id
+ */
 export function deleteUser(id): Promise<void> {
   return deleteResource("users", id);
 }
-
+/**
+ * @description Edit a file
+ * @param filename 
+ * @param metadata 
+ * @param contentStream 
+ */
 export function putFile(filename, metadata, contentStream): Promise<void> {
   return new Promise((resolve, reject) => {
     getClient()
@@ -382,7 +439,10 @@ export function putFile(filename, metadata, contentStream): Promise<void> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Delet a file
+ * @param filename file
+ */
 export function deleteFile(filename): Promise<void> {
   return new Promise((resolve, reject) => {
     getClient()
@@ -396,15 +456,23 @@ export function deleteFile(filename): Promise<void> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Delete Fault
+ * @param id 
+ */
 export function deleteFault(id): Promise<void> {
   return deleteResource("faults", id);
 }
-
+/**
+ * @description Delete a Task
+ * @param id 
+ */
 export function deleteTask(id): Promise<void> {
   return deleteResource("tasks", id);
 }
-
+/**
+ * @description Disconnect from Db
+ */
 export async function disconnect(): Promise<void> {
   if (clientPromise) await (await clientPromise).close();
 }

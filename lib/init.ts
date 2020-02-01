@@ -21,7 +21,9 @@ import * as localCache from "./local-cache";
 import { generateSalt, hashPassword } from "./auth";
 import * as db from "./ui/db";
 import { del } from "./cache";
-
+/**
+ * @summary Status interface.
+ */
 interface Status {
   users: boolean;
   presets: boolean;

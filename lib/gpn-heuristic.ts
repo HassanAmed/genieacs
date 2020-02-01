@@ -21,14 +21,15 @@ import Path from "./common/path";
 
 const WILDCARD_MULTIPLIER = 2;
 const UNDISCOVERED_DEPTH = 7;
-
-// Simple heuristic to estimate GPN count given a set of patterns to be
-// discovered. Used to decide whether to use nextLevel = false in GPN.
-// gpnPatterns is [pattern, flags]
-// pattern is a path (array)
-// flags is an int where its bits mark the segments in the pattern that
-// need refreshing. Leading 0s indicate that the pattern up to that
-// point has been discovered.
+/** 
+@description Simple heuristic to estimate GPN(Global Production Network) count given a set of patterns to be
+discovered. Used to decide whether to use nextLevel = false in GPN.
+gpnPatterns is [pattern, flags]
+pattern is a path (array)
+flags is an int where its bits mark the segments in the pattern that
+need refreshing. Leading 0s indicate that the pattern up to that
+point has been discovered.
+*/
 export function estimateGpnCount(
   gpnPatterns: [Path, number][],
   depth: number = 0

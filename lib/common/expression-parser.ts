@@ -20,7 +20,9 @@
 import * as parsimmon from "parsimmon";
 import { Expression } from "../types";
 
-// Turn escaped characters into real ones (e.g. "\\n" becomes "\n").
+/**  
+* @description Turn escaped characters into real ones (e.g. "\\n" becomes "\n").
+*/
 function interpretEscapes(str): string {
   const escapes = {
     b: "\b",
@@ -39,7 +41,12 @@ function interpretEscapes(str): string {
     return type;
   });
 }
-
+/**
+ * The map() method creates a new array with the results of calling a function for every array element.
+ * The map() method calls the provided function once for each element in an array, in order.
+ *  * @param exp 
+ * @param callback 
+ */
 export function map(exp, callback): Expression {
   if (!Array.isArray(exp)) return callback(exp);
 
@@ -54,7 +61,9 @@ export function map(exp, callback): Expression {
 
   return callback(clone || exp);
 }
-
+/**
+ * @description same as map() asynchronously
+ */
 export async function mapAsync(exp, callback): Promise<Expression> {
   if (!Array.isArray(exp)) return callback(exp);
 

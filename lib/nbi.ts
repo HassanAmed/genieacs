@@ -28,7 +28,7 @@ import * as apiFunctions from "./api-functions";
 import * as cache from "./cache";
 import { version as VERSION } from "../package.json";
 import { ping } from "./ping";
-
+// Regular expressions
 const DEVICE_TASKS_REGEX = /^\/devices\/([a-zA-Z0-9\-_%]+)\/tasks\/?$/;
 const TASKS_REGEX = /^\/tasks\/([a-zA-Z0-9\-_%]+)(\/[a-zA-Z_]*)?$/;
 const TAGS_REGEX = /^\/devices\/([a-zA-Z0-9\-_%]+)\/tags\/([a-zA-Z0-9\-_%]+)\/?$/;
@@ -41,7 +41,9 @@ const DELETE_DEVICE_REGEX = /^\/devices\/([a-zA-Z0-9\-_%]+)\/?$/;
 const PROVISIONS_REGEX = /^\/provisions\/([a-zA-Z0-9\-_%]+)\/?$/;
 const VIRTUAL_PARAMETERS_REGEX = /^\/virtual_parameters\/([a-zA-Z0-9\-_%]+)\/?$/;
 const FAULTS_REGEX = /^\/faults\/([a-zA-Z0-9\-_%:]+)\/?$/;
-
+/**
+ * @description custom fn to throw error
+ */
 function throwError(err, httpResponse?): never {
   if (httpResponse) {
     httpResponse.writeHead(500, { Connection: "close" });
@@ -49,7 +51,11 @@ function throwError(err, httpResponse?): never {
   }
   throw err;
 }
-
+/**
+ * @description listener for nbi server and to handle nbi server requests
+ * @param request Incoming Request
+ * @param response Server Response
+ */
 export function listener(request, response): void {
   const chunks = [];
   let bytes = 0;

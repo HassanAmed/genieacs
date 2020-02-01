@@ -33,7 +33,11 @@ import {
 import { Expression, Task } from "./types";
 import { flattenDevice } from "./mongodb-functions";
 import { evaluate } from "./common/expression";
-
+/**
+ * @description Create an http udp Connection Request
+ * @param deviceId Device Id
+ * @param device device
+ */
 export async function connectionRequest(
   deviceId: string,
   device?: {}
@@ -170,7 +174,12 @@ export async function connectionRequest(
     await udpProm;
   }
 }
-
+/**
+ * @description Check if a task/operation due on device is pending,deleted or faulted
+ * @param deviceId Device Id
+ * @param taskId Task Id
+ * @param timeout Timeout
+ */
 export async function watchTask(deviceId, taskId, timeout): Promise<string> {
   await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -268,7 +277,11 @@ function sanitizeTask(task): void {
 
   return task;
 }
-
+/**
+ * @description Insert a new taks into db.
+ * @param tasks Task to be inserted
+ * @returns resolves a promise and return inserted task
+ */
 export async function insertTasks(tasks): Promise<Task[]> {
   if (tasks && common.typeOf(tasks) !== common.ARRAY_TYPE) tasks = [tasks];
   else if (!tasks || tasks.length === 0) return tasks || [];
@@ -285,7 +298,11 @@ export async function insertTasks(tasks): Promise<Task[]> {
   await db.tasksCollection.insertMany(tasks);
   return tasks;
 }
-
+/**
+ * @description Delete a device and all of its relevant data
+ * @param deviceId Device Id
+ * @returns resolves promise
+ */
 export async function deleteDevice(deviceId): Promise<void> {
   await Promise.all([
     db.tasksCollection.deleteMany({ device: deviceId }),

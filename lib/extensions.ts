@@ -22,12 +22,16 @@ import * as crypto from "crypto";
 import * as config from "./config";
 import { Fault } from "./types";
 import { ROOT_DIR } from "./config";
-
+/**
+ * Extension Timeout 
+ */
 const TIMEOUT = +config.get("EXT_TIMEOUT");
 
 const processes: { [script: string]: ChildProcess } = {};
 const jobs = new Map();
-
+/**
+ * @summary Messages Handler for processes
+ */
 function messageHandler(message): void {
   const func = jobs.get(message[0]);
   if (func) {
@@ -35,7 +39,10 @@ function messageHandler(message): void {
     func({ fault: message[1], value: message[2] });
   }
 }
-
+/**
+ * @summary Run a child process
+ * @param args 
+ */
 export function run(args): Promise<{ fault: Fault; value: any }> {
   return new Promise(resolve => {
     const scriptName = args[0];
@@ -84,7 +91,10 @@ export function run(args): Promise<{ fault: Fault; value: any }> {
     return processes[scriptName].send([id, args.slice(1)]);
   });
 }
-
+/**
+ * @summary kill a child process
+ * @param process process to kill 
+ */
 function kill(process: ChildProcess): Promise<void> {
   return new Promise(resolve => {
     const timeToKill = Date.now() + 5000;
@@ -103,7 +113,9 @@ function kill(process: ChildProcess): Promise<void> {
     }, 100);
   });
 }
-
+/**
+ * @summary Kill all processes - used when server is terminated.
+ */
 export async function killAll(): Promise<void> {
   await Promise.all(
     Object.entries(processes).map(([k, p]) => {

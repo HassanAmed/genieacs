@@ -35,7 +35,9 @@ import { authLocal } from "./ui/api-functions";
 import * as init from "./init";
 import { version as VERSION } from "../package.json";
 import memoize from "./common/memoize";
-
+/**
+ * @ignore 
+ */
 declare module "koa" {
   interface Request {
     body: any;

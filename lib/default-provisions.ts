@@ -23,7 +23,12 @@ import * as device from "./device";
 import * as scheduling from "./scheduling";
 
 const MAX_DEPTH = +config.get("MAX_DEPTH");
-
+/**
+ * @description Refresh and push new declarations
+ * @param sessionContext session instance
+ * @param provision provisons
+ * @param declarations declarations
+ */
 export function refresh(sessionContext, provision, declarations): boolean {
   if (
     (provision.length !== 2 || typeof provision[1] !== "string") &&
@@ -55,7 +60,12 @@ export function refresh(sessionContext, provision, declarations): boolean {
 
   return true;
 }
-
+/**
+ * @description Fn to set value
+ * @param sessionContext 
+ * @param provision 
+ * @param declarations 
+ */
 export function value(sessionContext, provision, declarations): boolean {
   if (provision.length !== 3 || typeof provision[1] !== "string")
     throw new Error("Invalid arguments");
@@ -71,7 +81,9 @@ export function value(sessionContext, provision, declarations): boolean {
 
   return true;
 }
-
+/**
+ * @description function for tagging provision
+ */
 export function tag(sessionContext, provision, declarations): boolean {
   if (
     provision.length !== 3 ||
@@ -91,7 +103,12 @@ export function tag(sessionContext, provision, declarations): boolean {
 
   return true;
 }
-
+/**
+ * @description reboot provision
+ * @param sessionContext 
+ * @param provision 
+ * @param declarations 
+ */
 export function reboot(sessionContext, provision, declarations): boolean {
   if (provision.length !== 1) throw new Error("Invalid arguments");
 
@@ -121,7 +138,9 @@ export function reset(sessionContext, provision, declarations): boolean {
 
   return true;
 }
-
+/**
+ * @summary download provisions
+ */
 export function download(sessionContext, provision, declarations): boolean {
   if (
     (provision.length !== 3 ||
@@ -160,7 +179,9 @@ export function download(sessionContext, provision, declarations): boolean {
 
   return true;
 }
-
+/**
+ * @summary push an instance in declarations
+ */
 export function instances(
   sessionContext,
   provision,

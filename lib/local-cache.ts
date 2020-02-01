@@ -56,9 +56,12 @@ const EVICT_TIMEOUT = 60000;
 const snapshots = new Map<string, Snapshot>();
 let currentSnapshot: string = null;
 let nextRefresh = 1;
-
+/**
+ * @description MD5 hash for presets, provisions, virtual parameters for detecting changes
+ * @param snapshot snapshot interface instance
+ */
 function computeHash(snapshot): string {
-  // MD5 hash for presets, provisions, virtual parameters for detecting changes
+
   const h = crypto.createHash("md5");
   for (const p of snapshot.presets) {
     h.update(JSON.stringify(p.name));
@@ -429,39 +432,55 @@ async function refresh(): Promise<void> {
 
   nextRefresh = now + (REFRESH - (now % REFRESH));
 }
-
+/**a
+ * @description Get current Snapshot from cache
+ */
 export async function getCurrentSnapshot(): Promise<string> {
   if (Date.now() > nextRefresh) await refresh();
   return currentSnapshot;
 }
-
+/**
+ * @description Check if Snapshot exists in cache
+ */
 export function hasSnapshot(hash): boolean {
   return snapshots.has(hash);
 }
-
+/**
+ * Get Presets from snapshot in cahce
+ */
 export function getPresets(snapshotKey): Preset[] {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
   return snapshot.presets;
 }
-
+/**
+ * Get Provisions from snapshot incahce
+ */
 export function getProvisions(snapshotKey): Provisions {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
   return snapshot.provisions;
 }
-
+/**
+ * Get Virtual Params from snapshot in cahce
+*/
 export function getVirtualParameters(snapshotKey): VirtualParameters {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
   return snapshot.virtualParameters;
 }
 
+/**
+ * Get files from snapshot in cahce
+ */
 export function getFiles(snapshotKey): Files {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
   return snapshot.files;
 }
+/**
+ * Get Configurations 
+ */
 
 export function getConfig(
   snapshotKey: string,
@@ -508,28 +527,40 @@ export function getConfig(
   const v = expression.evaluate(snapshot.config[key], context, now, cb);
   return Array.isArray(v) ? null : v;
 }
-
+/**
+ * @description Get config Expression from chache
+ * @param snapshotKey 
+ * @param key 
+ */
 export function getConfigExpression(snapshotKey, key): Expression {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
 
   return snapshot.config[key];
 }
-
+/**
+ * Get users from snapshot
+ */
 export function getUsers(snapshotKey): {} {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
 
   return snapshot.users;
 }
-
+/**
+ * Get Permissions from snapshot
+ * @param snapshotKey 
+ */
 export function getPermissions(snapshotKey): Permissions {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");
 
   return snapshot.permissions;
 }
-
+/**
+ * Get UI configurations from snapshot
+ * @param snapshotKey snapshot
+ */
 export function getUiConfig(snapshotKey): UiConfig {
   const snapshot = snapshots.get(snapshotKey);
   if (!snapshot) throw new Error("Cache snapshot does not exist");

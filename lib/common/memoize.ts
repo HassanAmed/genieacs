@@ -20,7 +20,11 @@
 let cache1 = new Map();
 let cache2 = new Map();
 const keys = new WeakMap();
-
+/**
+ * @summary Get/Create Key for object 
+ * @param obj Object
+ * @returns Key or null incase of null object
+ */
 function getKey(obj): string {
   if (obj === null) return "null";
   else if (obj === undefined) return "undefined";
@@ -38,7 +42,10 @@ function getKey(obj): string {
   }
   return k;
 }
-
+/**
+ * @summary Memoize     
+ * @param func Object to memoize
+ */
 export default function memoize<T extends Function>(func: T): T {
   const funcKey = getKey(func);
   return ((...args) => {

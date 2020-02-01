@@ -33,7 +33,9 @@ const COMMIT = Symbol();
 const EXT = Symbol();
 
 const UNDEFINED = undefined;
-
+/**
+ * @description Context for a sandbox object
+ */
 const context = vm.createContext();
 
 let state;
@@ -68,7 +70,10 @@ function runExtension(sessionContext, key, extCall): Promise<Fault> {
 
   return prom;
 }
-
+/**
+ * A class for sandbox dates 
+ * Methods ParseDate and Date.UTC to get universal date.
+ */
 class SandboxDate {
   public constructor(
     ...argumentList: [
@@ -130,7 +135,9 @@ function random(): number {
 random.seed = function(s) {
   state.rng = seedrandom(s);
 };
-
+/**
+ * @description Wrapper class for params to define thier names
+ */
 class ParameterWrapper {
   public constructor(path: Path, attributes, unpacked?, unpackedRevision?) {
     for (const attrName of attributes) {
@@ -331,7 +338,10 @@ Object.defineProperty(context, "log", { value: log });
 context.random = random;
 vm.runInContext("Math.random = random;", context);
 delete context.random;
-
+/**
+ * @description Convert an error to fault object
+ * @param err 
+ */
 function errorToFault(err: Error): Fault {
   if (!err) return null;
 

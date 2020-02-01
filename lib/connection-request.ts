@@ -26,7 +26,11 @@ import { Expression } from "./types";
 import * as auth from "./auth";
 import * as extensions from "./extensions";
 import * as debug from "./debug";
-
+/**
+ * @summary Extract Authorization
+ * @param exp Expression
+ * @param dflt default
+ */
 async function extractAuth(
   exp: Expression,
   dflt: any
@@ -59,7 +63,13 @@ async function extractAuth(
   );
   return [username, password, _exp];
 }
-
+/**
+ * @summary create and http get request used by httpConnectionRequest function 
+ * @param options 
+ * @param timeout 
+ * @param _debug 
+ * @param deviceId 
+ */
 function httpGet(
   options: http.RequestOptions,
   timeout,
@@ -89,7 +99,15 @@ function httpGet(
       });
   });
 }
-
+/**
+ * @summary Create and http connection request
+ * @param address url or address
+ * @param authExp Authorization expression
+ * @param allowBasicAuth Check if auth type is basic
+ * @param timeout Timeout
+ * @param _debug debug (true or false)
+ * @param deviceId DeviceId
+ */
 export async function httpConnectionRequest(
   address: string,
   authExp: Expression,
@@ -168,7 +186,14 @@ export async function httpConnectionRequest(
   }
   throw new Error("Incorrect connection request credentials");
 }
-
+/**
+ * @summary Create a udp connection request using dgram node module
+ * @param address address
+ * @param authExp Authorization expression 
+ * @param sourcePort Source Port
+ * @param _debug 
+ * @param deviceId Device Id
+ */
 export async function udpConnectionRequest(
   address: string,
   authExp: Expression,

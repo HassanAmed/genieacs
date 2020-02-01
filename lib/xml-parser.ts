@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+ /**
+ * Unicodes for parsing
+ */
 const CHAR_SINGLE_QUOTE = 39;
 const CHAR_DOUBLE_QUOTE = 34;
 const CHAR_LESS_THAN = 60;
@@ -34,14 +36,18 @@ const CHAR_EQUAL = 61;
 const STATE_LESS_THAN = 1;
 const STATE_SINGLE_QUOTE = 2;
 const STATE_DOUBLE_QUOTE = 3;
-
+/**
+ * Interface used by Xml parser
+ */
 export interface Attribute {
   name: string;
   namespace: string;
   localName: string;
   value: string;
 }
-
+/**
+ * Interface used by Xml parser
+ */
 export interface Element {
   name: string;
   namespace: string;
@@ -51,7 +57,10 @@ export interface Element {
   bodyIndex: number;
   children: Element[];
 }
-
+/**
+ * Parse Xml 
+ * @param buffer data to be parsed
+ */
 export function parseXmlDeclaration(buffer: Buffer): Attribute[] {
   for (const enc of ["utf16le", "utf8", "latin1", "ascii"]) {
     let str = buffer.toString(enc, 0, 150);
@@ -66,7 +75,10 @@ export function parseXmlDeclaration(buffer: Buffer): Attribute[] {
   }
   return null;
 }
-
+/**
+ * Parse Attributes
+ * @param string 
+ */
 export function parseAttrs(string: string): Attribute[] {
   const attrs: Attribute[] = [];
   const len = string.length;
@@ -127,7 +139,10 @@ export function parseAttrs(string: string): Attribute[] {
 
   return attrs;
 }
-
+/**
+ * Symbols Decoder
+ * @param string 
+ */
 export function decodeEntities(string): string {
   return string.replace(/&[0-9a-z#]+;/gi, match => {
     switch (match) {
@@ -160,7 +175,10 @@ export function decodeEntities(string): string {
     return match;
   });
 }
-
+/**
+ * Symbols Encoder
+ * @param string 
+ */
 export function encodeEntities(string): string {
   const entities = {
     "&": "&amp;",
@@ -171,7 +189,10 @@ export function encodeEntities(string): string {
   };
   return string.replace(/[&"'<>]/g, m => entities[m]);
 }
-
+/**
+ * Parser
+ * @param string data to be parsed
+ */
 export function parseXml(string: string): Element {
   const len = string.length;
   let state1 = 0;

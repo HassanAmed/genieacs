@@ -41,7 +41,12 @@ function getConnectionTimestamp(connection: Socket): Date {
   }
   return t;
 }
-
+/**
+ * @summary Debug incoming requests
+ * @param httpRequest http request  
+ * @param deviceId device Id
+ * @param body body
+ */
 export function incomingHttpRequest(
   httpRequest: IncomingMessage,
   deviceId: string,
@@ -124,7 +129,13 @@ export function outgoingHttpRequest(
     appendFileSync(DEBUG_FILE, JSON.stringify(msg) + "\n");
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
-
+/**
+ * @summary Debug outgoing http request
+ * @param httpRequest 
+ * @param deviceId 
+ * @param options 
+ * @param err 
+ */
 export function outgoingHttpRequestError(
   httpRequest: ClientRequest,
   deviceId: string,
@@ -152,7 +163,13 @@ export function outgoingHttpRequestError(
     appendFileSync(DEBUG_FILE, JSON.stringify(msg) + "\n");
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
-
+/**
+ * @summary Debug incoming http request
+ * @param httpRequest 
+ * @param deviceId 
+ * @param options 
+ * @param err 
+ */
 export function incomingHttpResponse(
   httpResponse: IncomingMessage,
   deviceId: string,
@@ -178,7 +195,13 @@ export function incomingHttpResponse(
     appendFileSync(DEBUG_FILE, JSON.stringify(msg) + "\n");
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
-
+/**
+ * @description Debug outgoing udp Message
+ * @param remoteAddress 
+ * @param deviceId 
+ * @param remotePort 
+ * @param body 
+ */
 export function outgoingUdpMessage(
   remoteAddress: string,
   deviceId: string,

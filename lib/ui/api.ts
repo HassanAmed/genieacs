@@ -33,6 +33,9 @@ import { ping } from "../ping";
 import * as url from "url";
 
 const router = new Router();
+/**
+ * @description Koa-Router for Apis
+ */
 export default router;
 
 function logUnauthorizedWarning(log): void {
@@ -209,7 +212,9 @@ for (const [resource, flags] of Object.entries(resources)) {
     logger.accessInfo(log);
   });
 
-  // CSV download
+  /**
+   *  @description CSV download
+   */
   router.get(`/${resource}.csv`, async (ctx, next) => {
     const authorizer: Authorizer = ctx.state.authorizer;
     const options: QueryOptions = { projection: {} };
@@ -424,7 +429,9 @@ for (const [resource, flags] of Object.entries(resources)) {
     });
   }
 }
-
+/**
+ * @description Handle Put Requests
+ */
 router.put("/files/:id", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
   const resource = "files";
@@ -467,7 +474,9 @@ router.put("/files/:id", async (ctx, next) => {
 
   ctx.body = "";
 });
-
+/**
+ * @description Handle Post Requests
+ */
 router.post("/devices/:id/tasks", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
   const log = {
@@ -535,7 +544,9 @@ router.post("/devices/:id/tasks", async (ctx, next) => {
   ctx.set("Connection-Request", res.connectionRequest);
   ctx.body = res.tasks;
 });
-
+/**
+ * @description Handle Device related Post Requests
+ */
 router.post("/devices/:id/tags", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
   const log = {

@@ -54,13 +54,14 @@ interface ValidationErrors {
 }
 
 function putActionHandler(action, _object, isNew): Promise<ValidationErrors> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {""
     const object = Object.assign({}, _object);
     if (action === "save") {
       const id = object["_id"];
       delete object["_id"];
-
-      if (!id) return void resolve({ _id: "ID can not be empty" });
+      
+    
+      if (!id) return void resolve({ _id: "HERE I AM" });
 
       store
         .resourceExists("provisions", id)

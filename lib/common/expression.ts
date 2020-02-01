@@ -43,7 +43,9 @@ function reduce(exp, callback): Expression {
   if (exp.length === 2) return exp[1];
   return exp;
 }
-
+/**
+ * @description Implementation of %like% operator
+ */
 export function likePatternToRegExp(pat, esc = "", flags = ""): RegExp {
   const convChars = {
     "-": "\\-",
@@ -73,7 +75,10 @@ export function likePatternToRegExp(pat, esc = "", flags = ""): RegExp {
   chars[l] = [".*", ""].includes(chars[l]) ? "" : chars[l] + "$";
   return new RegExp(chars.join(""), flags);
 }
-
+/**
+ * @description Evaluate expression
+ * @param e 
+ */
 function evalExp(e: Expression): Expression {
   if (e[0] === "AND") {
     return reduce(e, (a, b) => {
@@ -231,7 +236,9 @@ export function evaluate(exp, obj?, now?: number, cb?: Function): Expression {
     return evalExp(e);
   });
 }
-
+/**
+ * @description Evaluate asynchoronously
+ */
 export async function evaluateAsync(
   exp,
   obj,
@@ -291,7 +298,9 @@ export function and(exp1: Expression, exp2: Expression): Expression {
 
   return res;
 }
-
+/**
+ * @description 'OR' implementation for custom created type expression
+ */
 export function or(exp1: Expression, exp2: Expression): Expression {
   if (!isArray(exp1)) return exp1 ? exp1 : exp2;
   if (!isArray(exp2)) return exp2 ? exp2 : exp1;
@@ -306,7 +315,9 @@ export function or(exp1: Expression, exp2: Expression): Expression {
 
   return res;
 }
-
+/**
+ * @description 'Not' implementation for custom created type expression
+ */
 export function not(exp): Expression {
   if (isArray(exp) && exp[0] === "NOT") return exp[1];
   return ["NOT", exp];

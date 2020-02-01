@@ -17,6 +17,7 @@
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 interface Config {
   _id: string;
   value: string;

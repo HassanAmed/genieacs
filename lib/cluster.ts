@@ -20,10 +20,19 @@
 import cluster from "cluster";
 import { cpus } from "os";
 import * as logger from "./logger";
-
+/**
+ * Keep track of child process/worker's time
+ */
 let respawnTimestamp = 0;
+/**
+ * Keep track of child process/worker crashes
+ * if worker crashes too many times it is exited.
+ */
 let crashes: number[] = [];
-
+/**
+ * @summary spawm a child process called worker used by cluster.start()
+ * @returns returns the worker
+ */
 function fork(): cluster.Worker {
   const w = cluster.fork();
   w.on("error", (err: NodeJS.ErrnoException) => {
@@ -35,7 +44,12 @@ function fork(): cluster.Worker {
   });
   return w;
 }
-
+/**
+ * 
+ * @param worker a child process/worker
+ * @param code process code -to be sent for logging
+ * @param signal process signal - to be sent for logging
+ */
 function restartWorker(worker, code, signal): void {
   const msg = {
     message: "Worker died",
@@ -88,7 +102,12 @@ function restartWorker(worker, code, signal): void {
     fork();
   }, respawnTimestamp - now);
 }
-
+/**
+ * @summary start a child process/worker
+ * @param workerCount count of worker process for given service 
+ * @param servicePort service port 
+ * @param serviceAddress service address (e.g address of cwmp)
+ */
 export function start(workerCount, servicePort, serviceAddress): void {
   cluster.on("listening", (worker, address) => {
     if (
@@ -111,10 +130,14 @@ export function start(workerCount, servicePort, serviceAddress): void {
 
   for (let i = 0; i < workerCount; ++i) fork();
 }
-
+/**
+ * @summary stop/kill worker 
+ */
 export function stop(): void {
   cluster.removeListener("exit", restartWorker);
   for (const pid in cluster.workers) cluster.workers[pid].kill();
 }
-
+/**
+ * Exporting worker for other files/modules to use
+ */
 export const worker = cluster.worker;

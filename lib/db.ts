@@ -46,13 +46,16 @@ export let tasksCollection: Collection,
 
 let clientPromise: Promise<MongoClient>;
 export let client: MongoClient;
-
+/**
+ * @summary Initialize db(all collections) and connect to it
+ */
 export async function connect(): Promise<void> {
   clientPromise = MongoClient.connect("" + get("MONGODB_CONNECTION_URL"), {
     useNewUrlParser: true
   });
 
   client = await clientPromise;
+  
   const db = client.db();
 
   tasksCollection = db.collection("tasks");
@@ -70,13 +73,19 @@ export async function connect(): Promise<void> {
   usersCollection = db.collection("users");
   configCollection = db.collection("config");
 }
-
+/**
+ * @summary Disconnect from mongodb client
+ */
 export async function disconnect(): Promise<void> {
   if (clientPromise) await (await clientPromise).close();
 }
 
 // Optimize projection by removing overlaps
 // This can modify the object
+/**
+ * @summary Remove overlapping entries
+ * @param obj 
+ */
 function optimizeProjection(obj: {}): {} {
   if (obj[""]) return { "": obj[""] };
 
@@ -95,7 +104,11 @@ function optimizeProjection(obj: {}): {} {
   }
   return obj;
 }
-
+/**
+ * @summary Fetch a device from db
+ * @param id device id
+ * @param timestamp time
+ */
 export async function fetchDevice(
   id: string,
   timestamp: number
@@ -282,7 +295,13 @@ export async function fetchDevice(
   storeParams(device, "", 0, 0);
   return res;
 }
-
+/**
+ * @summary Save a new device or save device after edit
+ * @param deviceId device id
+ * @param deviceData data
+ * @param isNew True if device is new
+ * @param sessionTimestamp
+ */
 export async function saveDevice(
   deviceId: string,
   deviceData: DeviceData,
@@ -521,7 +540,10 @@ export async function saveDevice(
     return;
   }
 }
-
+/**
+ * @summary get faults/errors of a device
+ * @param deviceId  
+ */
 export async function getFaults(
   deviceId
 ): Promise<{ [channel: string]: SessionFault }> {
@@ -542,7 +564,12 @@ export async function getFaults(
 
   return faults;
 }
-
+/**
+ * @summary Save a new error(function used whenever new error occurs) to log it.
+ * @param deviceId device on which error occured
+ * @param channel channel
+ * @param fault fault is error mapped to fault interface
+ */
 export async function saveFault(deviceId, channel, fault): Promise<void> {
   const id = `${deviceId}:${channel}`;
   fault = Object.assign({}, fault);
@@ -553,11 +580,19 @@ export async function saveFault(deviceId, channel, fault): Promise<void> {
   fault.provisions = JSON.stringify(fault.provisions);
   await faultsCollection.replaceOne({ _id: id }, fault, { upsert: true });
 }
-
+/**
+ * @description delet a fault
+ * @param deviceId 
+ * @param channel 
+ */
 export async function deleteFault(deviceId, channel): Promise<void> {
   await faultsCollection.deleteOne({ _id: `${deviceId}:${channel}` });
 }
-
+/**
+ * @description Get tasks which are due/Queued
+ * @param deviceId DeviceId
+ * @param timestamp time
+ */
 export async function getDueTasks(
   deviceId,
   timestamp
@@ -592,7 +627,11 @@ export async function getDueTasks(
   }
   return [tasks, null];
 }
-
+/**
+ * @description Clear Tasks
+ * @param deviceId 
+ * @param taskIds 
+ */
 export async function clearTasks(deviceId, taskIds): Promise<void> {
   await tasksCollection.deleteMany({
     _id: { $in: taskIds.map(id => new ObjectID(id)) }
@@ -618,7 +657,12 @@ export async function getOperations(
   }
   return operations;
 }
-
+/**
+ * @description Save a new operation
+ * @param deviceId 
+ * @param commandKey 
+ * @param operation 
+ */
 export async function saveOperation(
   deviceId,
   commandKey,
@@ -635,31 +679,47 @@ export async function saveOperation(
     upsert: true
   });
 }
-
+/**
+ * @description Delete operation
+ * @param deviceId 
+ * @param commandKey 
+ */
 export async function deleteOperation(deviceId, commandKey): Promise<void> {
   await operationsCollection.deleteOne({ _id: `${deviceId}:${commandKey}` });
 }
-
+/**
+ * @summary Get all presets saved in db
+ */
 export async function getPresets(): Promise<{}[]> {
   return presetsCollection.find().toArray();
 }
-
+/**
+ * @summary get Objects saved in DB
+ */
 export async function getObjects(): Promise<{}[]> {
   return objectsCollection.find().toArray();
 }
-
+/**
+ * @description Get provisions saved in Db
+ */
 export async function getProvisions(): Promise<{}[]> {
   return provisionsCollection.find().toArray();
 }
-
+/**
+ * @description Get Virtual Params from db
+ */
 export async function getVirtualParameters(): Promise<{}[]> {
   return virtualParametersCollection.find().toArray();
 }
-
+/**
+ * @description Get files from Db
+ */
 export function getFiles(): Promise<{}[]> {
   return filesCollection.find().toArray();
 }
-
+/**
+ * @description Get configurations from Db
+ */
 export async function getConfig(): Promise<
   { id: string; value: Expression }[]
 > {
@@ -677,7 +737,9 @@ interface Permission {
   filter: string;
   validate: string;
 }
-
+/**
+ * @description Get Permission saved from Db
+ */
 export async function getPermissions(): Promise<Permission[]> {
   return permissionsCollection.find().toArray();
 }
@@ -688,7 +750,9 @@ interface User {
   salt: string;
   roles: string;
 }
-
+/**
+ * @description Get list of all users registered to access platform.
+ */
 export async function getUsers(): Promise<User[]> {
   return usersCollection.find().toArray();
 }

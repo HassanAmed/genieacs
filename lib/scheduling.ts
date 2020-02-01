@@ -36,7 +36,9 @@ function md532(str): number {
 export function variance(deviceId, vrnc): number {
   return (md532(deviceId) >>> 0) % vrnc;
 }
-
+/**
+ * @description Returns Session Interval 
+ */
 export function interval(timestamp, intrvl, offset = 0): number {
   return Math.trunc((timestamp + offset) / intrvl) * intrvl - offset;
 }
@@ -47,7 +49,9 @@ export function parseCron(cronExp): any {
 
   return later.schedule(later.parse.cron(parts.join(" "), true));
 }
-
+/**
+ * @description Scheduler
+ */
 export function cron(timestamp, schedule, offset = 0): number[] {
   // TODO later.js doesn't throw erorr if expression is invalid!
   const ret = [0, 0];

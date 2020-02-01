@@ -19,7 +19,9 @@
 
 import { PermissionSet, Expression } from "../types";
 import { evaluate, or } from "./expression";
-
+/**
+ * @description Authorizer class  implements methods to enforce and check authorization.
+ */
 export default class Authorizer {
   private permissionSets: PermissionSet[];
   private validatorCache: WeakMap<
