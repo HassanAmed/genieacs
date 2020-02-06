@@ -52,7 +52,12 @@ const unpackSmartQuery = memoize(query => {
 interface ValidationErrors {
   [prop: string]: string;
 }
-
+/**
+ * @description Function used by component to verify data passed in fields then call fn Putresource from store.ts which makes api request
+ * @param action action (save/delet)
+ * @param _object resource object (virtual parameter,preset or any resource etc)  
+ * @param isNew Check if item is new or not
+ */
 function putActionHandler(action, _object, isNew): Promise<ValidationErrors> {
   return new Promise((resolve, reject) => {
     const object = Object.assign({}, _object);
@@ -142,7 +147,9 @@ const getDownloadUrl = memoize(filter => {
     columns: JSON.stringify(cols)
   })}`;
 });
-
+/**
+ * @description Check Authorization then load
+ */
 export function init(args): Promise<{}> {
   if (!window.authorizer.hasAccess("users", 2)) {
     return Promise.reject(
@@ -154,7 +161,9 @@ export function init(args): Promise<{}> {
   const filter = args.hasOwnProperty("filter") ? "" + args["filter"] : "";
   return Promise.resolve({ filter, sort });
 }
-
+/**
+ * @description Mithril component for users in admin menu
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

@@ -68,5 +68,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Page layout component
+ */
 export default component;

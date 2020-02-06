@@ -78,5 +78,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description menu bar component
+ */
 export default component;

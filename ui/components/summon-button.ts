@@ -87,5 +87,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Component for summon button on devices page
+ */
 export default component;

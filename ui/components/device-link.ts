@@ -44,5 +44,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Component for device links
+ */
 export default component;

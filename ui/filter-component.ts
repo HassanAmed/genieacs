@@ -143,5 +143,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Component for filtering data
+ */
 export default component;

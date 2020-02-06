@@ -154,5 +154,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Parameters component
+ */
 export default component;

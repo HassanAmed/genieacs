@@ -108,5 +108,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Component for tag/untag buttons
+ */
 export default component;

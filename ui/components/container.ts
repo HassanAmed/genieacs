@@ -43,5 +43,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Mithril component for container
+ */
 export default component;

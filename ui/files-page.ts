@@ -77,7 +77,9 @@ const unpackSmartQuery = memoize(query => {
 interface ValidationErrors {
   [prop: string]: string;
 }
-
+/**
+ * @description Function to add/edit files
+ */
 function putActionHandler(action, _object): Promise<ValidationErrors> {
   return new Promise((resolve, reject) => {
     const object = Object.assign({}, _object);
@@ -149,7 +151,9 @@ export function init(args): Promise<{}> {
   const filter = args.hasOwnProperty("filter") ? "" + args["filter"] : "";
   return Promise.resolve({ filter, sort });
 }
-
+/**
+ * @description Component for files page in admin tab
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

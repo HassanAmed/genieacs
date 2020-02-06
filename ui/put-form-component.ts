@@ -29,7 +29,9 @@ const singular = {
   users: "user",
   permissions: "permission"
 };
-
+/**
+ * @description Create a form field.
+ */
 function createField(current, attr, focus): Children {
   if (attr.type === "combo") {
     let selected = "";
@@ -254,5 +256,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Forms component
+ */
 export default component;

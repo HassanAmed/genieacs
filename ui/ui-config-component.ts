@@ -24,7 +24,9 @@ import { yaml } from "./dynamic-loader";
 import * as configFunctions from "./config-functions";
 import codeEditorComponent from "./code-editor-component";
 import { parse } from "../lib/common/expression-parser";
-
+/**
+ * @description Action handler for ui config (Action handler call functions from store based on action that creates xhr request)
+ */
 function putActionHandler(prefix: string[], dataYaml: string): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
@@ -77,7 +79,9 @@ function putActionHandler(prefix: string[], dataYaml: string): Promise<any> {
     }
   });
 }
-
+/**
+ * @description Create UI-config components
+ */
 const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {
@@ -141,5 +145,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description UI-Config component
+ */
 export default component;

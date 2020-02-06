@@ -37,7 +37,10 @@ function onError(): void {
     );
   }
 }
-
+/**
+ * @description CodeMirror is a versatile text editor implemented in JavaScript for the browser.
+ * @summary Used here when in setting code scripts for provisons configs virtual params on admin page.
+ */
 export function loadCodeMirror(): Promise<void> {
   if (codeMirror) return Promise.resolve();
 
@@ -60,7 +63,9 @@ export function loadCodeMirror(): Promise<void> {
       });
   });
 }
-
+/**
+ * @description Fn to loadYaml module
+ */
 export function loadYaml(): Promise<void> {
   if (yaml) return Promise.resolve();
 

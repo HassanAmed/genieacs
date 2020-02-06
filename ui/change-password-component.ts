@@ -21,7 +21,9 @@ import { VnodeDOM, ClosureComponent, Component } from "mithril";
 import * as notifications from "./notifications";
 import { changePassword } from "./store";
 import { m } from "./components";
-
+/**
+ * @description Compnent that changes password
+ */
 const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {
@@ -135,5 +137,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Component to change password
+ */
 export default component;

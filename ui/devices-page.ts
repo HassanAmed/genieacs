@@ -78,7 +78,10 @@ export function init(args): Promise<{}> {
     resolve({ filter, indexParameters, sort });
   });
 }
-
+/**
+ * @description Function to render action when interacted on deivces page
+ * @param selected 
+ */
 function renderActions(selected): Children {
   const buttons = [];
 
@@ -219,7 +222,9 @@ function renderActions(selected): Children {
 
   return buttons;
 }
-
+/**
+ * @description All devices page component
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

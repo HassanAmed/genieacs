@@ -17,17 +17,24 @@
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
+/**
+ * @description Configuration interface
+ */
 interface Config {
   _id: string;
   value: string;
 }
-
+/**
+ * @description Configuration Differences interface
+ */
 interface Diff {
   add: Config[];
   remove: string[];
 }
-
+/**
+ * @description Flatten configuration
+ * @param config Config
+ */
 export function flattenConfig(config): any {
   const flatten = {};
   const recuresive = (obj: any, root: string): void => {
@@ -96,7 +103,11 @@ export function structureConfig(config: Config[]): any {
 
   return toArray(_config);
 }
-
+/**
+ * @description difnference in configs
+ * @param current
+ * @param target 
+ */
 export function diffConfig(current, target): Diff {
   const diff = {
     add: [],

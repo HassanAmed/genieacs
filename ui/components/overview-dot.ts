@@ -55,5 +55,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Overview component to be used by overview page.
+ */
 export default component;

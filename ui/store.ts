@@ -30,7 +30,9 @@ const memoizedEvaluate = memoize(evaluate);
 
 let fulfillTimestamp = 0;
 let connectionNotification, configNotification, versionNotification;
-
+/**
+ * @description Queries Object
+ */
 const queries = {
   filter: new WeakMap(),
   bookmark: new WeakMap(),
@@ -41,7 +43,10 @@ const queries = {
   accessed: new WeakMap(),
   value: new WeakMap()
 };
-
+/**
+ * @description Resources interface implemented to standardize model for different resources
+ * (Devices faults files presets etc)
+ */
 interface Resources {
   [resource: string]: {
     objects: Map<string, any>;
@@ -71,7 +76,9 @@ for (const r of [
     combinedFilter: null
   };
 }
-
+/**
+ * @description Query Response class (used for getting xhr responses)
+ */
 class QueryResponse {
   public get fulfilled(): boolean {
     queries.accessed.set(this, Date.now());
@@ -88,7 +95,9 @@ class QueryResponse {
     return queries.value.get(this);
   }
 }
-
+/**
+ * @description Function to check server conntection (This fn keeps running every 3s to check connection and look for updates)
+ */
 function checkConnection(): void {
   m.request({
     url: "/status",
@@ -153,7 +162,9 @@ function checkConnection(): void {
 }
 
 setInterval(checkConnection, 3000);
-
+/**
+ * @description Function to create an xhrRequest 
+ */
 export async function xhrRequest(
   options: { url: string } & m.RequestOptions<{}>
 ): Promise<any> {
@@ -195,13 +206,19 @@ export async function xhrRequest(
 
   return m.request(options);
 }
-
+/**
+ * @description Used for filtering
+ */
 export function unpackExpression(exp): Expression {
   if (!Array.isArray(exp)) return exp;
   const e = memoizedEvaluate(exp, null, fulfillTimestamp);
   return e;
 }
-
+/**
+ * @description Count Resource
+ * @param resourceType Resource type
+ * @param filter filter to apply
+ */
 export function count(resourceType, filter): QueryResponse {
   const filterStr = memoizedStringify(filter);
   let queryResponse = resources[resourceType].count.get(filterStr);
@@ -213,7 +230,9 @@ export function count(resourceType, filter): QueryResponse {
   queries.filter.set(queryResponse, filter);
   return queryResponse;
 }
-
+/**
+ * @description Filtering
+ */
 function limitFilter(filter, sort, bookmark): Expression {
   const sortSort = (a, b): number => Math.abs(b[1]) - Math.abs(a[1]);
   const arr = Object.entries(sort)
@@ -257,7 +276,9 @@ function limitFilter(filter, sort, bookmark): Expression {
     )
   );
 }
-
+/**
+ * @description Apparent from fn name
+ */
 function compareFunction(sort: {
   [param: string]: number;
 }): (a: any, b: any) => number {
@@ -297,7 +318,9 @@ function compareFunction(sort: {
     return 0;
   };
 }
-
+/**
+ * @description Find matches in query
+ */
 function findMatches(resourceType, filter, sort, limit): any[] {
   let value = [];
   for (const obj of resources[resourceType].objects.values())
@@ -308,7 +331,11 @@ function findMatches(resourceType, filter, sort, limit): any[] {
 
   return value;
 }
-
+/**
+ * @description 
+ * @param resourceType 
+ * @param queryResponse 
+ */
 function inferQuery(resourceType, queryResponse): void {
   const limit = queries.limit.get(queryResponse);
   let filter = queries.filter.get(queryResponse);
@@ -329,7 +356,12 @@ function inferQuery(resourceType, queryResponse): void {
     findMatches(resourceType, filter, sort, limit)
   );
 }
-
+/**
+ * @description Query to fetch a resource
+ * @param resourceType Resource Type
+ * @param filter filter
+ * @param options options
+ */
 export function fetch(
   resourceType,
   filter,
@@ -356,7 +388,9 @@ export function fetch(
   inferQuery(resourceType, queryResponse);
   return queryResponse;
 }
-
+/**
+ * @description fn to fulfill promise (based on  timestamps)
+ */
 export function fulfill(accessTimestamp, _fulfillTimestamp): Promise<boolean> {
   let updated = false;
 
@@ -575,11 +609,17 @@ export function fulfill(accessTimestamp, _fulfillTimestamp): Promise<boolean> {
       .catch(reject);
   });
 }
-
+/**
+ * @description fn to get Time stamp
+ */
 export function getTimestamp(): number {
   return fulfillTimestamp;
 }
-
+/**
+ * @description 
+ * @param deviceId 
+ * @param tasks 
+ */
 export function postTasks(deviceId, tasks): Promise<string> {
   for (const t of tasks) {
     t.status = "pending";
@@ -605,7 +645,11 @@ export function postTasks(deviceId, tasks): Promise<string> {
     }
   });
 }
-
+/**
+ * @description Fn to make POST xhrRequest to api to update Tags
+ * @param deviceId device ID
+ * @param tags tags
+ */
 export function updateTags(deviceId, tags): Promise<void> {
   return xhrRequest({
     method: "POST",
@@ -613,14 +657,23 @@ export function updateTags(deviceId, tags): Promise<void> {
     body: tags
   });
 }
-
+/**
+ * @description Fn to make Delete xhrRequest to api to dete Resource
+ * @param resourceType Resource Type
+ * @param id 
+ */
 export function deleteResource(resourceType, id): Promise<void> {
   return xhrRequest({
     method: "DELETE",
     url: `/api/${resourceType}/${encodeURIComponent(id)}`
   });
 }
-
+/**
+ * @description Fn to make PUT xhrRequest to api to edit Resource
+ * @param resourceType Resource Type (device,files,presets etc)
+ * @param id id
+ * @param object object  
+ */
 export function putResource(resourceType, id, object): Promise<void> {
   for (const k in object) if (object[k] === undefined) object[k] = null;
   console.log(resourceType);
@@ -630,7 +683,9 @@ export function putResource(resourceType, id, object): Promise<void> {
     body: object
   });
 }
-
+/**
+ * @description Fn to make Get xhrRequest to config api to build and get query string
+ */
 export function queryConfig(pattern = "%"): Promise<any[]> {
   const filter = stringify(["LIKE", ["PARAM", "_id"], pattern]);
   return xhrRequest({
@@ -639,7 +694,11 @@ export function queryConfig(pattern = "%"): Promise<any[]> {
     background: true
   });
 }
-
+/**
+ * @description Fn to make Head xhrRequest to api to check if resource exists
+ * @param resource resource exists
+ * @param id Id
+ */
 export function resourceExists(resource, id): Promise<number> {
   const param = resource === "devices" ? "DeviceID.ID" : "_id";
   const filter = ["=", ["PARAM", param], id];
@@ -654,12 +713,16 @@ export function resourceExists(resource, id): Promise<number> {
     background: true
   });
 }
-
+/**
+ * @description fn to evaluate expression
+ */
 export function evaluateExpression(exp, obj): Expression {
   if (!Array.isArray(exp)) return exp;
   return memoizedEvaluate(exp, obj, fulfillTimestamp);
 }
-
+/**
+ * @description Fn to make PUT xhrRequest to users api to change Password 
+ */
 export function changePassword(
   username,
   newPassword,
@@ -674,7 +737,11 @@ export function changePassword(
     body
   });
 }
-
+/**
+ * @description Fn to make POST xhrRequest to login
+ * @param username 
+ * @param password 
+ */
 export function logIn(username, password): Promise<void> {
   return xhrRequest({
     method: "POST",
@@ -683,14 +750,18 @@ export function logIn(username, password): Promise<void> {
     body: { username, password }
   });
 }
-
+/**
+ * @description Fn to make POST xhrRequest to logout
+ */
 export function logOut(): Promise<void> {
   return xhrRequest({
     method: "POST",
     url: "/logout"
   });
 }
-
+/**
+ * @description Fn to ping server 
+ */
 export function ping(host): Promise<{}> {
   return xhrRequest({
     url: `/api/ping/${encodeURIComponent(host)}`,

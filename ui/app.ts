@@ -38,7 +38,9 @@ import Authorizer from "../lib//common/authorizer";
 import * as notifications from "./notifications";
 import { contextifyComponent } from "./components";
 import { PermissionSet, UiConfig } from "../lib/types";
-
+/**
+ * @description A global interface that having sub interfaces.
+ */
 declare global {
   interface Window {
     authorizer: Authorizer;
@@ -67,7 +69,9 @@ let state;
 let lastRenderTimestamp = 0;
 let pageVisitTimestamp = 0;
 let fulfillTimeout = null;
-
+/**
+ * @description Fulfill Timeout
+ */
 function fulfill(): void {
   clearTimeout(fulfillTimeout);
   fulfillTimeout = setTimeout(() => {
@@ -76,7 +80,11 @@ function fulfill(): void {
     });
   }, 100);
 }
-
+/**
+ * @description Function to render page based on its components
+ * @param pageName Page Name
+ * @param page Page instance
+ */
 function pagify(pageName, page): RouteResolver {
   const component: RouteResolver = {
     render: () => {
@@ -122,7 +130,9 @@ function pagify(pageName, page): RouteResolver {
 
   return component;
 }
-
+/**
+ * @description Redirect an admin subpage if authorized
+ */
 function redirectAdminPage(): RouteResolver {
   const component: RouteResolver = {
     onmatch: () => {
@@ -137,7 +147,9 @@ function redirectAdminPage(): RouteResolver {
   };
   return component;
 }
-
+/**
+ * @summary App routing.
+ */
 m.route(document.body, "/overview", {
   "/wizard": pagify("wizard", wizardPage),
   "/login": pagify("login", loginPage),

@@ -53,5 +53,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Component for parameters list.
+ */
 export default component;

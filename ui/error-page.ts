@@ -19,7 +19,9 @@
 
 import { ClosureComponent, Component } from "mithril";
 import { m } from "./components";
-
+/**
+ * @description Component for Error (used in app)
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: function(vnode) {

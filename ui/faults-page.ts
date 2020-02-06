@@ -64,7 +64,9 @@ const unpackSmartQuery = memoize(query => {
     return e;
   });
 });
-
+/**
+ * @description Initialize(page) function
+ */
 export function init(args): Promise<{}> {
   if (!window.authorizer.hasAccess("faults", 2)) {
     return Promise.reject(
@@ -82,7 +84,9 @@ export function init(args): Promise<{}> {
       .catch(reject);
   });
 }
-
+/**
+ * @description Component for faults page
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

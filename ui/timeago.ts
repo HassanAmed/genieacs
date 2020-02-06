@@ -25,7 +25,10 @@ const UNITS = {
   minute: 60 * 1000,
   second: 1000
 };
-
+/**
+ * @description Fn to get time passed
+ * @param dtime 
+ */
 export default function timeAgo(dtime): string {
   let res = "";
   let level = 2;

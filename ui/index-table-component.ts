@@ -41,8 +41,9 @@ function renderTable(
   recordActionsCallback?: Children | ((record: Record<string, any>) => Children)
 ): Children {
   const records = data || [];
-
-  // Actions bar
+/**
+ * Actions bar
+ */
   let buttons: Children = [];
   if (typeof actionsCallback === "function") {
     buttons = actionsCallback(selected);
@@ -50,8 +51,9 @@ function renderTable(
   } else if (Array.isArray(actionsCallback)) {
     buttons = actionsCallback;
   }
-
-  // Table header
+/**
+ * Table header
+ */ 
   const labels = [];
   if (buttons.length) {
     const selectAll = m("input", {
@@ -96,8 +98,9 @@ function renderTable(
 
     labels.push(m("th", [label, sortable]));
   }
-
-  // Table rows
+/**
+ * Table rows
+ */
   const rows = [];
   for (const record of records) {
     const id = record["_id"] || record["DeviceID.ID"].value[0];
@@ -249,5 +252,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Index Table component
+ */
 export default component;

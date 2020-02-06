@@ -23,7 +23,10 @@ import { stringify } from "../lib/common/expression-parser";
 import memoize from "../lib/common/memoize";
 
 const memoizedStringify = memoize(stringify);
-
+/**
+ * @description Function to draw pie chat (on overview page)
+ * @param chartData Data
+ */
 function drawChart(chartData): Children {
   const slices = chartData.slices;
   const total: number = Array.from(Object.values(chartData.slices)).reduce(
@@ -140,5 +143,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Pie-chart component
+ */
 export default component;

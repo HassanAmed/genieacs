@@ -19,7 +19,9 @@
 
 import m from "mithril";
 import { ClosureComponent, Component } from "mithril";
-
+/**
+ * @description function to create admin menu component
+ */
 const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {
@@ -100,5 +102,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Admin menu component on admin page
+ */
 export default component;

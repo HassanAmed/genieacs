@@ -109,5 +109,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Virtual param component
+ */
 export default component;

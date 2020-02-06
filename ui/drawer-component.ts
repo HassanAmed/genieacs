@@ -36,7 +36,12 @@ function mparam(param): Children {
 function mval(val): Children {
   return m("span.value", { title: val }, `${val}`);
 }
-
+/**
+ * @description Render queue staging in drawer
+ * @param task Task
+ * @param queueFunc  fn to queue
+ * @param cancelFunc fn to cancel
+ */
 function renderStagingSpv(task, queueFunc, cancelFunc): Children {
   function keydown(e): void {
     if (e.keyCode === 13) queueFunc();
@@ -89,7 +94,10 @@ function renderStagingSpv(task, queueFunc, cancelFunc): Children {
 
   return [m("span", "Editing ", mparam(task.parameterValues[0][0])), input];
 }
-
+/**
+ * @description Download task render
+ * @param task task
+ */
 function renderStagingDownload(task): Children {
   task.invalid = !task.fileName || !task.fileType;
   const files = store.fetch("files", true);
@@ -194,7 +202,10 @@ function renderStaging(staging): Child[] {
   }
   return elements;
 }
-
+/**
+ * @description Render/show task queue
+ * @param queue 
+ */
 function renderQueue(queue): Child[] {
   const details: Child[] = [];
   const devices: { [deviceId: string]: any[] } = {};
@@ -305,7 +316,10 @@ function renderQueue(queue): Child[] {
 
   return details;
 }
-
+/**
+ * @description Render notification bar after completing task or cancelling task
+ * @param notifs Notification
+ */
 function renderNotifications(notifs): Child[] {
   const notificationElements: Child[] = [];
 
@@ -343,7 +357,9 @@ function renderNotifications(notifs): Child[] {
   }
   return notificationElements;
 }
-
+/**
+ * @description Drawer component (opens when task queued)
+ */
 const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {
@@ -535,5 +551,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Drawer component (opens when task queued)
+ */
 export default component;

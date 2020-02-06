@@ -72,5 +72,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Long text component
+ */
 export default component;

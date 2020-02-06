@@ -29,7 +29,9 @@ for (const group of Object.values(GROUPS)) {
   for (const chartName of Object.values(group["charts"]) as string[])
     CHARTS[chartName] = config.ui.overview.charts[chartName];
 }
-
+/**
+ * @description Show pie chart at time of page initialization
+ */
 function queryCharts(charts): {} {
   charts = Object.assign({}, charts);
   for (let [chartName, chart] of Object.entries(charts)) {
@@ -53,7 +55,9 @@ export function init(): Promise<{}> {
 
   return Promise.resolve({ charts: queryCharts(CHARTS) });
 }
-
+/**
+ * @description Overview Page component
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

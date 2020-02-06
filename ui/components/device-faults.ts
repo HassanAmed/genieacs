@@ -92,5 +92,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Mithril component for device faults table
+ */
 export default component;

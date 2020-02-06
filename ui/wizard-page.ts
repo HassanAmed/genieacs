@@ -23,7 +23,9 @@ import * as notifications from "./notifications";
 export async function init(): Promise<{}> {
   return m.request({ url: "/init" });
 }
-
+/**
+ * @description Mithril component for wizard page (showed at startup for first time)
+ */
 export const component: ClosureComponent = (vnode): Component => {
   let options = vnode.attrs;
   const selected = new Set<string>();

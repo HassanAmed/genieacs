@@ -76,5 +76,7 @@ const component: ClosureComponent = (vn): Component => {
     }
   };
 };
-
+/**
+ * @description Ping Component
+ */
 export default component;

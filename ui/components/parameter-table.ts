@@ -153,5 +153,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Params table component (add/delete)
+ */
 export default component;

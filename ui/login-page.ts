@@ -27,7 +27,9 @@ import changePasswordComponent from "./change-password-component";
 export function init(args): Promise<{}> {
   return Promise.resolve(args);
 }
-
+/**
+ * @description Login page component
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

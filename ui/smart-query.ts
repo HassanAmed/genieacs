@@ -19,7 +19,9 @@
 
 import config from "./config";
 import { Expression } from "../lib/types";
-
+/**
+ * @description Resources object
+ */
 const resources = {
   devices: {},
   faults: {
@@ -68,12 +70,16 @@ for (const v of Object.values(config.ui.filters as {
     type: (v.type || "").split(",").map(s => s.trim())
   };
 }
-
+/**
+ * @description fn to query label
+ */
 export function getLabels(resource): string[] {
   if (!resources[resource]) return [];
   return Object.keys(resources[resource]);
 }
-
+/**
+ * @description fn to query number
+ */
 function queryNumber(param, value): Expression {
   let op = "=";
   for (const o of ["<>", "=", "<=", "<", ">=", ">"]) {
@@ -89,7 +95,9 @@ function queryNumber(param, value): Expression {
 
   return [op, param, v];
 }
-
+/**
+ * @description fn to query timestamp
+ */
 function queryTimestamp(param, value): Expression {
   let op = "=";
   for (const o of ["<>", "=", "<=", "<", ">=", ">"]) {
@@ -105,7 +113,9 @@ function queryTimestamp(param, value): Expression {
   if (isNaN(v)) return null;
   return [op, param, v];
 }
-
+/**
+ * @description fn to query string
+ */
 function queryString(param, value): Expression {
   return ["LIKE", ["FUNC", "LOWER", param], value.toLowerCase()];
 }
@@ -136,7 +146,11 @@ function queryTag(tag: string): Expression {
   const t = tag.replace(/[^a-zA-Z0-9-]+/g, "_");
   return ["IS NOT NULL", ["PARAM", `Tags.${t}`]];
 }
-
+/**
+ * @description Tip for smart Query
+ * @param resource Resource
+ * @param label label
+ */
 export function getTip(resource, label): string {
   let tip;
   if (resources[resource] && resources[resource][label]) {
@@ -171,7 +185,12 @@ export function getTip(resource, label): string {
   }
   return tip;
 }
-
+/**
+ * @description fn to get/unpack query response
+ * @param resource resource
+ * @param label label
+ * @param value value
+ */
 export function unpack(resource, label, value): Expression {
   if (!resources[resource]) return null;
   const type = resources[resource][label].type;

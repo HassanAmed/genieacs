@@ -27,7 +27,12 @@ interface Notification {
 }
 
 const notifications = new Set<Notification>();
-
+/**
+ * @description fn to push a notifcation
+ * @param type Type
+ * @param message Message
+ * @param actions Action
+ */
 export function push(type, message, actions?): Notification {
   const n: Notification = {
     type: type,
@@ -45,12 +50,16 @@ export function push(type, message, actions?): Notification {
 
   return n;
 }
-
+/**
+ * @description Delete notification
+ */
 export function dismiss(n: Notification): void {
   notifications.delete(n);
   m.redraw();
 }
-
+/**
+ * @description Get notification
+ */
 export function getNotifications(): Set<Notification> {
   return notifications;
 }

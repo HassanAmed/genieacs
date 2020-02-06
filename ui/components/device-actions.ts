@@ -106,5 +106,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Mithril component actions buttons on devices page (reboot,delete,pushfile,reset)
+ */
 export default component;

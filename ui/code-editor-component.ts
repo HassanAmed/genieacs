@@ -57,5 +57,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description Code editor component
+ */
 export default component;

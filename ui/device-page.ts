@@ -21,7 +21,9 @@ import { ClosureComponent, Component } from "mithril";
 import { m } from "./components";
 import config from "./config";
 import * as store from "./store";
-
+/**
+ * @description Initialize page 
+ */
 export function init(args): Promise<{}> {
   if (!window.authorizer.hasAccess("devices", 2)) {
     return Promise.reject(
@@ -34,7 +36,9 @@ export function init(args): Promise<{}> {
     deviceFilter: ["=", ["PARAM", "DeviceID.ID"], args.id]
   });
 }
-
+/**
+ * @description Device page component
+ */
 export const component: ClosureComponent = (): Component => {
   return {
     view: vnode => {

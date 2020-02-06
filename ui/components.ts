@@ -39,7 +39,9 @@ import tags from "./components/tags";
 import ping from "./components/ping";
 import deviceLink from "./components/device-link";
 import longTextComponent from "./long-text-component";
-
+/**
+ * @description Object containing all components from genieacs/ui/components
+ */
 const comps = {
   parameter,
   "parameter-list": parameterList,
@@ -118,7 +120,10 @@ function applyContext(vnode, parentContext): void {
       for (const c of vnode.children) applyContext(c, vc);
   }
 }
-
+/**
+ * @description Assign context to components
+ * @param component 
+ */
 export function contextifyComponent(component: ComponentTypes): ComponentTypes {
   let c = contextifiedComponents.get(component);
   if (!c) {

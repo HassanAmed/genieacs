@@ -20,7 +20,9 @@
 import m, { ClosureComponent, Component } from "mithril";
 import * as store from "./store";
 import * as notifications from "./notifications";
-
+/**
+ * @description create User-menu component
+ */
 const component: ClosureComponent = (): Component => {
   return {
     view: () => {
@@ -65,5 +67,7 @@ const component: ClosureComponent = (): Component => {
     }
   };
 };
-
+/**
+ * @description User-menu component
+ */
 export default component;

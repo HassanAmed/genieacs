@@ -35,7 +35,9 @@ export function close(callback: OverlayCallback): boolean {
 
   return false;
 }
-
+/**
+ * @description Fn to render pages overlay
+ */
 export function render(): Children {
   if (overlayCallback) {
     return m(
