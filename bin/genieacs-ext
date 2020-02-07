@@ -19,12 +19,16 @@
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ // *This extension service is for converting error to faults we store all errors as faults in db.
 import { Fault } from "../lib/types";
 
 const jobs = new Set();
 const fileName = process.argv[2];
 let script;
-
+/**
+ * @description Function to convert error to fault and return as fault
+ * @param err pass error as param
+ */
 function errorToFault(err: Error): Fault {
   if (!err) return null;
 
@@ -69,6 +73,7 @@ process.on("message", message => {
   jobs.add(message[0]);
 
   if (!script) {
+    // cwd = current working directory
     const cwd = process.env["GENIEACS_EXT_DIR"];
     process.chdir(cwd);
     script = require(`${cwd}/${fileName}`);
