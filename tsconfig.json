@@ -23,7 +23,7 @@
   ],
   "typedocOptions": {
     "mode": "module",
-    "out": "docs/moduledocs/",
+    "out": "docs/moduleDocs/",
     "excludeNotExported":false,
     "ignoreCompilerErrors": true
 }
