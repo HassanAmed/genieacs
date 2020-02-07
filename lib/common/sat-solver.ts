@@ -167,7 +167,9 @@ function unitPropagate(clauses, varVals): number[] | 1 | -1 {
 
   return derivedVars;
 }
-
+/**
+ * @description function used for subset check in expression.ts 
+ */
 export function naiveDpll(clauses, maxvarnr): boolean {
   // variable values are 0 if not set, 1 if positive, -1 if negative
   const varVals = new Int32Array(maxvarnr + 1);

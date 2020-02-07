@@ -128,7 +128,14 @@ export async function fetchDevice(
 
   const device = await devicesCollection.findOne({ _id: id });
   if (!device) return null;
-
+/**
+ * @description function to store parameters of device objects based on what properties it has 
+ * (as different devices (CPEs) may vary in properties)
+ * @param obj object
+ * @param path path 
+ * @param pathLength length of path 
+ * @param ts timestamp
+ */
   function storeParams(obj, path: string, pathLength: number, ts): void {
     if (obj["_timestamp"]) obj["_timestamp"] = +obj["_timestamp"];
 
@@ -637,7 +644,10 @@ export async function clearTasks(deviceId, taskIds): Promise<void> {
     _id: { $in: taskIds.map(id => new ObjectID(id)) }
   });
 }
-
+/**
+ * @description Get Operations against a device from db
+ * @param deviceId device id
+ */
 export async function getOperations(
   deviceId
 ): Promise<{ [commandKey: string]: Operation }> {

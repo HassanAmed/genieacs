@@ -37,7 +37,10 @@ const router = new Router();
  * @description Koa-Router for Apis
  */
 export default router;
-
+/**
+ * @description Log if unauthorized user try to access resource
+ * @param log 
+ */
 function logUnauthorizedWarning(log): void {
   log.message += " not authorized";
   logger.accessWarn(log);
@@ -58,7 +61,9 @@ const RESOURCE_IDS = {
   faults: "_id",
   tasks: "_id"
 };
-
+/**
+ * @description Anything in db is resource
+ */
 const resources = {
   devices: 0 | RESOURCE_DELETE,
   presets: 0 | RESOURCE_DELETE | RESOURCE_PUT,
@@ -71,7 +76,10 @@ const resources = {
   faults: 0 | RESOURCE_DELETE,
   tasks: 0
 };
-
+/**
+ * @description Get Api for devices  
+ * Each api first check if user is authorized access resource 
+ */
 router.get(`/devices/:id.csv`, async ctx => {
   const authorizer: Authorizer = ctx.state.authorizer;
   const log = {
@@ -159,7 +167,7 @@ for (const [resource, flags] of Object.entries(resources)) {
     log.count = count;
     logger.accessInfo(log);
   });
-
+// Get resource Api
   router.get(`/${resource}`, async (ctx, next) => {
     const authorizer: Authorizer = ctx.state.authorizer;
     const options: QueryOptions = {};
@@ -328,7 +336,9 @@ for (const [resource, flags] of Object.entries(resources)) {
     logger.accessInfo(log);
     ctx.body = "";
   });
-
+/**
+ * Handle Get Request for resource
+ */
   router.get(`/${resource}/:id`, async (ctx, next) => {
     const authorizer: Authorizer = ctx.state.authorizer;
     const log = {
@@ -356,6 +366,7 @@ for (const [resource, flags] of Object.entries(resources)) {
   });
 
   if (flags & RESOURCE_DELETE) {
+    // Api to Handle delete resource request 
     router.delete(`/${resource}/:id`, async (ctx, next) => {
       const authorizer: Authorizer = ctx.state.authorizer;
       const log = {
@@ -391,6 +402,7 @@ for (const [resource, flags] of Object.entries(resources)) {
   }
 
   if (flags & RESOURCE_PUT) {
+    // Api to handle edit resource request
     router.put(`/${resource}/:id`, async (ctx, next) => {
       const authorizer: Authorizer = ctx.state.authorizer;
       const id = ctx.params.id;
@@ -430,7 +442,7 @@ for (const [resource, flags] of Object.entries(resources)) {
   }
 }
 /**
- * @description Handle Put Requests
+ * @description Api to Handle Put Requests (PUT api for files)
  */
 router.put("/files/:id", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
@@ -475,7 +487,8 @@ router.put("/files/:id", async (ctx, next) => {
   ctx.body = "";
 });
 /**
- * @description Handle Post Requests
+ * @description Handle Post Requests (POST api for device tasks)
+ * All actions from ui come in form of queued tasks
  */
 router.post("/devices/:id/tasks", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
@@ -545,7 +558,7 @@ router.post("/devices/:id/tasks", async (ctx, next) => {
   ctx.body = res.tasks;
 });
 /**
- * @description Handle Device related Post Requests
+ * @description Api Handle Post Requests for device tags 
  */
 router.post("/devices/:id/tags", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
@@ -587,7 +600,9 @@ router.post("/devices/:id/tags", async (ctx, next) => {
 
   ctx.body = "";
 });
-
+/**
+ * Handle Ping request if server has some error throw error else resolve promise
+ */
 router.get("/ping/:host", async ctx => {
   return new Promise(resolve => {
     ping(ctx.params.host, (err, parsed) => {
@@ -601,7 +616,9 @@ router.get("/ping/:host", async ctx => {
     });
   });
 });
-
+/**
+ * Handle PUT Api request to change password for a registered user
+ */
 router.put("/users/:id/password", async (ctx, next) => {
   const authorizer: Authorizer = ctx.state.authorizer;
   const username = ctx.params.id;

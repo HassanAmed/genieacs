@@ -34,7 +34,7 @@ import { Expression, Task } from "./types";
 import { flattenDevice } from "./mongodb-functions";
 import { evaluate } from "./common/expression";
 /**
- * @description Create an http udp Connection Request
+ * @description Create an http udp Connection Request (used by apis)
  * @param deviceId Device Id
  * @param device device
  */
@@ -85,7 +85,7 @@ export async function connectionRequest(
   }
 
   const remoteAddress = parse(connectionRequestUrl).host;
-
+//evaluate expression to be used to set properties based on expression object
   const evalCallback = (exp): Expression => {
     if (!Array.isArray(exp)) return exp;
     if (exp[0] === "PARAM") {
@@ -199,7 +199,10 @@ export async function watchTask(deviceId, taskId, timeout): Promise<string> {
 
   return watchTask(deviceId, taskId, timeout);
 }
-
+/**
+ * @description check task expiry timestamp and assign new if expired
+ * @param task 
+ */
 function sanitizeTask(task): void {
   task.timestamp = new Date(task.timestamp || Date.now());
   if (task.expiry) {

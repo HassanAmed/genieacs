@@ -5,7 +5,9 @@ interface Revisions<V> {
   [rev: number]: V;
   delete?: number;
 }
-
+/**
+ * @description Versioned map is a class whose instances are used by timestamp and attributes interfaces
+ */
 export default class VersionedMap<K, V> {
   private _sizeDiff: number[];
   private _revision: number;

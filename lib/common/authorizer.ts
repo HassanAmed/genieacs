@@ -37,7 +37,11 @@ export default class Authorizer {
     this.hasAccessCache = new Map();
     this.getFilterCache = new Map();
   }
-
+/**
+ * @description Method to check if user is authorized to access resource
+ * @param resourceType Resource type
+ * @param access Access number
+ */
   public hasAccess(resourceType: string, access: number): boolean {
     const cacheKey = `${resourceType}-${access}`;
     if (this.hasAccessCache.has(cacheKey))
@@ -58,7 +62,9 @@ export default class Authorizer {
     this.hasAccessCache.set(cacheKey, has);
     return has;
   }
-
+/**
+ * @description Method to filter resources 
+ */
   public getFilter(resourceType: string, access: number): Expression {
     const cacheKey = `${resourceType}-${access}`;
     if (this.getFilterCache.has(cacheKey))
@@ -77,7 +83,9 @@ export default class Authorizer {
     this.getFilterCache.set(cacheKey, filter);
     return filter;
   }
-
+/**
+ * @description Check for validators in validator's cache Map
+ */
   public getValidator(
     resourceType,
     resource

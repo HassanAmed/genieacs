@@ -25,7 +25,10 @@ const CHANGE_FLAGS = {
   writable: 4,
   value: 8
 };
-
+/**
+ * @description fn to parse a boolean
+ * @param v 
+ */
 function parseBool(v): boolean {
   v = "" + v;
   if (v === "true" || v === "TRUE" || v === "True" || v === "1") return true;
@@ -123,7 +126,7 @@ export function getAliasDeclarations(
   return decs;
 }
 /**
- * @description unpack device data
+ * @description unpack(open and get whatever contents device data has) device data
  */
 export function unpack(
   deviceData: DeviceData,
@@ -276,7 +279,14 @@ function compareEquality(a, b): boolean {
 
   return JSON.stringify(a) === JSON.stringify(b);
 }
-
+/**
+ * @description Set device data & attributes
+ * @param deviceData 
+ * @param path 
+ * @param timestamp 
+ * @param attributes 
+ * @param toClear 
+ */
 export function set(
   deviceData: DeviceData,
   path: Path,

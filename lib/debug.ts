@@ -32,7 +32,10 @@ const DEBUG_FILE = "" + config.get("DEBUG_FILE");
 const DEBUG_FORMAT = "" + config.get("DEBUG_FORMAT");
 
 const connectionTimestamps = new WeakMap<Socket, Date>();
-
+/**
+ * @description return time stamp of when connection was made
+ * @param connection 
+ */
 function getConnectionTimestamp(connection: Socket): Date {
   let t = connectionTimestamps.get(connection);
   if (!t) {
@@ -42,7 +45,7 @@ function getConnectionTimestamp(connection: Socket): Date {
   return t;
 }
 /**
- * @summary Debug incoming requests
+ * @summary Debug(create debugging file) incoming http requests
  * @param httpRequest http request  
  * @param deviceId device Id
  * @param body body
@@ -74,7 +77,12 @@ export function incomingHttpRequest(
     appendFileSync(DEBUG_FILE, JSON.stringify(msg) + "\n");
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
-
+/**
+ * @description Debug(create debuggin file ) for out going http Response
+ * @param httpResponse 
+ * @param deviceId 
+ * @param body 
+ */
 export function outgoingHttpResponse(
   httpResponse: ServerResponse,
   deviceId: string,
@@ -100,7 +108,13 @@ export function outgoingHttpResponse(
     appendFileSync(DEBUG_FILE, JSON.stringify(msg) + "\n");
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
-
+/**
+ * @description Debug(create debuggin file ) for out going http requests
+ * @param httpRequest 
+ * @param deviceId 
+ * @param options 
+ * @param body 
+ */
 export function outgoingHttpRequest(
   httpRequest: ClientRequest,
   deviceId: string,
@@ -130,7 +144,7 @@ export function outgoingHttpRequest(
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
 /**
- * @summary Debug outgoing http request
+ * @summary Debuggin(create debugging file) for outgoing http request Errors
  * @param httpRequest 
  * @param deviceId 
  * @param options 
@@ -164,7 +178,7 @@ export function outgoingHttpRequestError(
   else throw new Error(`Unrecognized DEBUG_FORMAT option`);
 }
 /**
- * @summary Debug incoming http request
+ * @description Debug(create debuggin file ) for incoming http requests
  * @param httpRequest 
  * @param deviceId 
  * @param options 

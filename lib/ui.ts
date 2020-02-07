@@ -196,7 +196,9 @@ router.get("/init", async ctx => {
 
   ctx.body = status;
 });
-
+/**
+ * Api to initialize seed information
+ */
 router.post("/init", async ctx => {
   const status = ctx.request.body;
   if (Object.keys(localCache.getUsers(ctx.state.configSnapshot)).length) {

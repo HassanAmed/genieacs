@@ -23,7 +23,11 @@ import { likePatternToRegExp, evaluate } from "./common/expression";
 import { Expression, Fault, Task } from "./types";
 
 const isArray = Array.isArray;
-
+/**
+ * @description Process device filetring from db
+ * (e.g used when we click to view only online devices etc)
+ * @param filter Filter to be used
+ */
 export function processDeviceFilter(filter): Expression {
   return map(filter, exp => {
     if (!isArray(exp)) return exp;
@@ -85,7 +89,10 @@ export function processDeviceFilter(filter): Expression {
     return exp;
   });
 }
-
+/**
+ * @description Process task filetring from db
+ * @param filter Filter to be used
+ */
 export function processTasksFilter(filter): Expression {
   return map(filter, exp => {
     if (!isArray(exp)) return exp;
@@ -101,7 +108,10 @@ export function processTasksFilter(filter): Expression {
     return exp;
   });
 }
-
+/**
+ * @description Process task filetring from db
+ * @param filter Filter to be used
+ */
 export function processFaultsFilter(filter): Expression {
   return map(filter, exp => {
     if (!isArray(exp)) return exp;
@@ -115,7 +125,10 @@ export function processFaultsFilter(filter): Expression {
     return exp;
   });
 }
-
+/**
+ * @description Apply a filter to mongo query(convert normal filter sign to query filter)
+ * @param exp 
+ */
 export function filterToMongoQuery(exp: Expression): {} {
   const ops = {
     OR: 0,
@@ -248,7 +261,10 @@ export function filterToMongoQuery(exp: Expression): {} {
 
   return recursive(_exp, false);
 }
-
+/**
+ * @description Process devices projection (from ui)
+ * @param projection 
+ */
 export function processDeviceProjection(projection: {}): {} {
   if (!projection) return projection;
   const p = {};
@@ -274,7 +290,10 @@ export function processDeviceProjection(projection: {}): {} {
 
   return p;
 }
-
+/**
+ * @description fn to sort devices (these fn are used in supporting monogo queries)
+ * @param sort 
+ */
 export function processDeviceSort(sort: {}): {} {
   if (!sort) return sort;
   const s = {};
@@ -290,7 +309,10 @@ export function processDeviceSort(sort: {}): {} {
 
   return s;
 }
-
+/**
+ * @description parse date
+ * @param d date
+ */
 function parseDate(d): number | string {
   const n = +d;
   return isNaN(n) ? "" + d : n;
@@ -306,7 +328,10 @@ interface FlatDevice {
     valueTimestamp: number;
   };
 }
-
+/**
+ * @description flatten means converting nested objects in one object
+ * @param device device
+ */
 export function flattenDevice(device): FlatDevice {
   function recursive(input, root, output, timestamp): void {
     for (const [name, tree] of Object.entries(input)) {
@@ -450,14 +475,20 @@ export function flattenDevice(device): FlatDevice {
   recursive(device, "", newDevice, timestamp);
   return newDevice;
 }
-
+/**
+ * @description Flatten a fault 
+ * @param fault fault
+ */
 export function flattenFault(fault): Fault {
   const f = Object.assign({}, fault);
   if (f.timestamp) f.timestamp = +f.timestamp;
   if (f.expiry) f.expiry = +f.expiry;
   return f;
 }
-
+/**
+ * @description flatten a task and return flattened object
+ * @param task task
+ */
 export function flattenTask(task): Task {
   const t = Object.assign({}, task);
   t._id = "" + t._id;
@@ -465,7 +496,10 @@ export function flattenTask(task): Task {
   if (t.expiry) t.expiry = +t.expiry;
   return t;
 }
-
+/**
+ * @description convert a mongo query filter to normal filter 
+ * @param query operator
+ */
 export function mongoQueryToFilter(query): Expression {
   function recursive(_query): Expression {
     const expressions: Expression[] = [];
@@ -553,7 +587,10 @@ export function mongoQueryToFilter(query): Expression {
 
   return recursive(query);
 }
-
+/**
+ * @description Flatten a Preset  and return flattened object
+ * @param preset 
+ */
 export function flattenPreset(preset): {} {
   const p = Object.assign({}, preset);
   if (p.precondition) {
@@ -588,7 +625,10 @@ export function flattenPreset(preset): {} {
   delete p.configurations;
   return p;
 }
-
+/**
+ * @description flatten a file metadata and return flattened object
+ * @param file 
+ */
 export function flattenFile(file): {} {
   const f = {};
   f["_id"] = file["_id"];
@@ -600,7 +640,10 @@ export function flattenFile(file): {} {
   }
   return f;
 }
-
+/**
+ * @description Pre process preset to be used by put preset function in db.ts
+ * @param data 
+ */
 export function preProcessPreset(data): {} {
   const preset = Object.assign({}, data);
 

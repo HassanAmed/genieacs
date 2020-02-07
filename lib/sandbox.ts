@@ -44,6 +44,12 @@ const runningExtensions = new WeakMap<
   SessionContext,
   Map<string, Promise<Fault>>
 >();
+/**
+ * @description function to run extension service on new child process and get faults (if any)
+ * @param sessionContext 
+ * @param key 
+ * @param extCall 
+ */
 function runExtension(sessionContext, key, extCall): Promise<Fault> {
   let re = runningExtensions.get(sessionContext);
   if (!re) {
@@ -125,7 +131,7 @@ class SandboxDate {
     return Date.UTC(...args);
   }
 }
-
+// self explanotry
 function random(): number {
   if (!state.rng) state.rng = seedrandom(state.sessionContext.deviceId);
 
@@ -223,7 +229,13 @@ class ParameterWrapper {
     };
   }
 }
-
+/**
+ * @description Method of context object initialized at start (Implementation of method is here
+ * property added below)
+ * @param path 
+ * @param timestamps 
+ * @param values 
+ */
 function declare(
   path: string,
   timestamps: { [attr: string]: number },
@@ -275,14 +287,23 @@ function declare(
 
   return new ParameterWrapper(parsedPath, attrs);
 }
-
+/**
+ * @description Method of context object initialized at start (Implementation of method is here
+ * property added below)
+ * @param path 
+ * @param timestamp 
+ * @param attributes 
+ */
 function clear(path: string, timestamp: number, attributes?): void {
   state.uncommitted = true;
 
   if (state.revision === state.maxRevision)
     state.clear.push([Path.parse(path), timestamp, attributes]);
 }
-
+/**
+ * @description Method of context object initialized at start (Implementation of method is here
+ * property added below)
+ */
 function commit(): void {
   ++state.revision;
   state.uncommitted = false;
@@ -296,7 +317,10 @@ function commit(): void {
     );
   }
 }
-
+/**
+ * @description Method of context object initialized at start (Implementation of method is here
+ * property added below)
+ */
 function ext(): any {
   ++state.extCounter;
   const extCall = Array.from(arguments).map(String);
@@ -308,7 +332,12 @@ function ext(): any {
   state.extensions[key] = extCall;
   throw EXT;
 }
-
+/**
+ * @description Method of context object initialized at start (Implementation of method is here
+ * property added below)
+ * @param msg 
+ * @param meta 
+ */
 function log(msg: string, meta: {}): void {
   if (state.revision === state.maxRevision && state.extCounter >= 0) {
     const details = Object.assign({}, meta, {

@@ -25,7 +25,8 @@ type Alias = [Path, string][];
 let cache1 = new Map<string, Path>();
 let cache2 = new Map<string, Path>();
 /**
- * Path to be used in interface in types.ts
+ * Path to be used in interface in types.ts 
+ * Path are used as propeties of devices/deivces data 
  */
 export default class Path {
   public readonly segments: Segments;
@@ -33,7 +34,11 @@ export default class Path {
   public readonly alias: number;
   protected _string: string;
   protected _stringIndex: number[];
-
+/**
+ * @description Parse an alias type as string
+ * @param pattern 
+ * @param index 
+ */
   protected static parseAlias(
     pattern: string,
     index: number
@@ -140,7 +145,10 @@ export default class Path {
     this._string = arr.join(".");
     this._stringIndex = stringIndex;
   }
-
+/**
+ * @description Parse string as path
+ * @param str 
+ */
   public static parse(str: string): Path {
     let path = cache1.get(str);
     if (!path) {
@@ -162,7 +170,9 @@ export default class Path {
   public toString(): string {
     return this._string;
   }
-
+/**
+ * @description Slice function for path
+ */
   public slice(start: number = 0, end: number = this.segments.length): Path {
     if (start < 0) start = Math.max(0, this.segments.length + start);
     if (end < 0) end = Math.max(0, this.segments.length + end);
@@ -192,7 +202,10 @@ export default class Path {
 
     return path;
   }
-
+/**
+ * @description concatenate two paths (current resource path + path passed in param)
+ * @param path2 2nd path 
+ */
   public concat(path2: Path): Path {
     if (!path2._string) return this;
     else if (!this._string) return path2;
@@ -212,7 +225,9 @@ export default class Path {
 
     return path;
   }
-
+/**
+ * @description 
+ */
   public stripAlias(): Path {
     if (!this.alias) return this;
     const segments = this.segments.map(s => (Array.isArray(s) ? "*" : s));

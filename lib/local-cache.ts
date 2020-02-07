@@ -38,7 +38,9 @@ import {
   Config,
   UiConfig
 } from "./types";
-
+/**
+ * @description Snapshot interface contains all db collections interfaces
+ */
 interface Snapshot {
   presets: Preset[];
   provisions: Provisions;
@@ -109,7 +111,9 @@ function computeHash(snapshot): string {
 
   return h.digest("hex");
 }
-
+/**
+ * @description flatten nested objects in one object
+ */
 function flattenObject(src, prefix = "", dst = {}): {} {
   for (const k of Object.keys(src)) {
     const v = src[k];
@@ -119,7 +123,9 @@ function flattenObject(src, prefix = "", dst = {}): {} {
   }
   return dst;
 }
-
+/**
+ * @description fetch presets from db
+ */
 async function fetchPresets(): Promise<Preset[]> {
   const res = await db.getPresets();
   let objects = await db.getObjects();
@@ -255,7 +261,9 @@ async function fetchPresets(): Promise<Preset[]> {
 
   return presets;
 }
-
+/**
+ * @description fetch provisions from db
+ */
 async function fetchProvisions(): Promise<Provisions> {
   const res = await db.getProvisions();
 
@@ -274,7 +282,9 @@ async function fetchProvisions(): Promise<Provisions> {
 
   return provisions;
 }
-
+/**
+ * @description Fetch virtual parameters from db
+ */
 async function fetchVirtualParameters(): Promise<VirtualParameters> {
   const res = await db.getVirtualParameters();
 
@@ -293,7 +303,9 @@ async function fetchVirtualParameters(): Promise<VirtualParameters> {
 
   return virtualParameters;
 }
-
+/**
+ * @description Fetch permissions from db
+ */
 async function fetchPermissions(): Promise<Permissions> {
   const perms = await db.getPermissions();
   const permissions: Permissions = {};
@@ -312,7 +324,9 @@ async function fetchPermissions(): Promise<Permissions> {
 
   return permissions;
 }
-
+/**
+ * @description Fetch files from db
+ */
 async function fetchFiles(): Promise<Files> {
   const res = await db.getFiles();
   const files = {};
@@ -327,7 +341,9 @@ async function fetchFiles(): Promise<Files> {
 
   return files;
 }
-
+/**
+ * @description fetch users from db
+ */
 async function fetchUsers(): Promise<Users> {
   const _users = await db.getUsers();
   const users = {};
@@ -342,7 +358,9 @@ async function fetchUsers(): Promise<Users> {
 
   return users;
 }
-
+/**
+ * @description fetch Config from db
+ */
 async function fetchConfig(): Promise<[Config, UiConfig]> {
   const conf = await db.getConfig();
 
@@ -376,7 +394,9 @@ async function fetchConfig(): Promise<[Config, UiConfig]> {
 
   return [_config, ui];
 }
-
+/**
+ * @description refresh db and snapshot(to be used when we edit/add or update anything in db)
+ */
 async function refresh(): Promise<void> {
   if (!nextRefresh) {
     await new Promise(resolve => setTimeout(resolve, 20));

@@ -23,8 +23,10 @@ import * as config from "../config";
 import * as mongodbFunctions from "../mongodb-functions";
 import * as expression from "../common/expression";
 import { QueryOptions } from "../types";
-
-const CACHE_TTL = 300000;
+/**
+ * @description Cache Time to live (Time to which cache wil remain)
+ */
+const CACHE_TTL = 300000; //5min 
 
 let clientPromise: Promise<MongoClient>;
 
@@ -38,7 +40,9 @@ function ensureIndexes(client): void {
     .collection("cache")
     .createIndex({ expire: 1 }, { expireAfterSeconds: 0 });
 }
-
+/**
+ * Connect to existing or new mongodb client
+ */
 function getClient(): Promise<MongoClient> {
   if (!clientPromise) {
     clientPromise = new Promise((resolve, reject) => {

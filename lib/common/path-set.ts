@@ -18,7 +18,9 @@
  */
 
 import Path from "./path";
-
+/**
+ * @description Class to implement set(structure) for custom created path type
+ */
 export default class PathSet {
   private lengthIndex: Set<Path>[];
   private fragmentIndex: Map<string, Set<Path>>[];
@@ -29,11 +31,16 @@ export default class PathSet {
     this.fragmentIndex = [];
     this.stringIndex = new Map();
   }
-
+/**
+ * @description Get length
+ */
   public get depth(): number {
     return this.lengthIndex.length;
   }
-
+/**
+ * @description add path element to set
+ * @param path Path
+ */
   public add(path: Path): Path {
     if (path.alias) throw new Error("PathSet does not support aliased paths");
     const p = this.get(path);
@@ -70,7 +77,9 @@ export default class PathSet {
   public get(path: Path): Path {
     return this.stringIndex.get(path.toString()) || null;
   }
-
+/**
+ * @description find a path element in path-set
+ */
   public find(
     path: Path,
     superset: boolean = false,

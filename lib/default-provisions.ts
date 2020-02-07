@@ -61,7 +61,7 @@ export function refresh(sessionContext, provision, declarations): boolean {
   return true;
 }
 /**
- * @description Fn to set value
+ * @description Fn to set value of a provision
  * @param sessionContext 
  * @param provision 
  * @param declarations 
@@ -123,7 +123,12 @@ export function reboot(sessionContext, provision, declarations): boolean {
 
   return true;
 }
-
+/**
+ * @description reset provision (to default)
+ * @param sessionContext 
+ * @param provision 
+ * @param declarations 
+ */
 export function reset(sessionContext, provision, declarations): boolean {
   if (provision.length !== 1) throw new Error("Invalid arguments");
 

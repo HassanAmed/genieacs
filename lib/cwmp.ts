@@ -53,7 +53,7 @@ import { parseXmlDeclaration } from "./xml-parser";
 import * as debug from "./debug";
 import { getRequestOrigin } from "./forwarded";
 /**
- * Compress Data using zlib.gzip.
+ * Compress Data using zlib.gzip. (zlib is a module used for compression and decompression)
  */
 const gzipPromisified = promisify(zlib.gzip);
 /**
@@ -301,7 +301,12 @@ function recordFault(
 
   session.clearProvisions(sessionContext);
 }
-
+/**
+ * @description Implementation of inform request of SNMP (simple network management protocol)
+ * This function is used to get soap response of a request used in processing requests.
+ * @param sessionContext 
+ * @param rpc 
+ */
 async function inform(
   sessionContext: SessionContext,
   rpc: SoapMessage

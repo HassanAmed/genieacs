@@ -84,7 +84,9 @@ declare("Device.ManagementServer.PeriodicInformEnable", {value: daily}, {value: 
 declare("Device.ManagementServer.PeriodicInformInterval", {value: daily}, {value: informInterval});
 declare("Device.ManagementServer.PeriodicInformTime", {value: daily}, {value: informTime});
 `.trim();
-
+/**
+ * @description Get current status of db cache
+ */
 export async function getStatus(): Promise<Status> {
   const configSnapshot = await localCache.getCurrentSnapshot();
   const users = localCache.getUsers(configSnapshot);
@@ -100,7 +102,10 @@ export async function getStatus(): Promise<Status> {
     overview: !Object.keys(ui["overview"]).length
   };
 }
-
+/**
+ * @description Seed default information models
+ * @param options 
+ */
 export async function seed(options): Promise<void> {
   const resources = {};
   const proms = [];

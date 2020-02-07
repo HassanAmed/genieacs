@@ -59,7 +59,8 @@ function normalize(input): any {
   return input;
 }
 /**
- * @summary Expand Value
+ * @summary A complex values, such as tables, lists, records or links, can be expanded
+ *  to reveal the values contained in the complex value.
  * @param value 
  */
 export function expandValue(value): any[] {
@@ -97,7 +98,11 @@ export function expandValue(value): any[] {
   }
   return objs;
 }
-
+/**
+ * @description return a changed form by expanding complex value in data structure.
+ * @param param 
+ * @param val 
+ */
 function permute(param, val): any[] {
   const conditions = [];
   const values = expandValue(val);
@@ -112,7 +117,10 @@ function permute(param, val): any[] {
 
   return conditions;
 }
-
+/**
+ * @description Expand a query and return new formed  
+ * @param query 
+ */
 export function expand(query): {} {
   const newQuery = {};
   for (const [k, v] of Object.entries(query)) {

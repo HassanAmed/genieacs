@@ -1,3 +1,6 @@
+/**
+ * @description Instance interface
+ */
 interface Instance {
   [name: string]: string;
 }

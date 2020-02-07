@@ -43,7 +43,8 @@ function getKey(obj): string {
   return k;
 }
 /**
- * @summary Memoize     
+ * @summary Memoize (optimization technique to speed up program by storing expensive fn call results)
+ * Follow link to see whats memoization https://en.wikipedia.org/wiki/Memoization
  * @param func Object to memoize
  */
 export default function memoize<T extends Function>(func: T): T {

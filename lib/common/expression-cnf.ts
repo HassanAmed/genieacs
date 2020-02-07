@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+/**
+ * **Note This  file implements CNF(conjuntive normal form) for custom created type. 
+ */
 import { map, parseLikePattern } from "./expression-parser";
 import { Expression } from "../types";
 

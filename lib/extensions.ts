@@ -23,7 +23,7 @@ import * as config from "./config";
 import { Fault } from "./types";
 import { ROOT_DIR } from "./config";
 /**
- * Extension Timeout 
+ * @description Extension Timeout 
  */
 const TIMEOUT = +config.get("EXT_TIMEOUT");
 

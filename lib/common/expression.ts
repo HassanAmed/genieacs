@@ -16,7 +16,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+//#################################################################################################//
+/**
+ * @description In genieacs platform the CPE devices properties (IP,Name,MAC etc) can have different data types
+ * for example IP-> Number , Name-> string some maybe object and this may also differ based on CPE of different
+ * comapnies so to provide consistency author made new data type expression which can be anything
+ * (string number null based on what it gets).
+ * Now in this files he has explicitly made all operations for expression type 
+ * 
+ */
 import { map, mapAsync, parseLikePattern } from "./expression-parser";
 import { booleanCnf } from "./expression-cnf";
 import { naiveDpll } from "./sat-solver";
@@ -76,7 +84,7 @@ export function likePatternToRegExp(pat, esc = "", flags = ""): RegExp {
   return new RegExp(chars.join(""), flags);
 }
 /**
- * @description Evaluate expression
+ * @description Evaluate logics (AND OR NOT) for expression type
  * @param e 
  */
 function evalExp(e: Expression): Expression {
@@ -283,7 +291,9 @@ export async function evaluateAsync(
     return evalExp(e);
   });
 }
-
+/**
+ * @description 'AND' implementation for custom created type expression
+ */
 export function and(exp1: Expression, exp2: Expression): Expression {
   if (!isArray(exp1)) return exp1 ? exp2 : exp1;
   if (!isArray(exp2)) return exp2 ? exp1 : exp2;
@@ -322,14 +332,18 @@ export function not(exp): Expression {
   if (isArray(exp) && exp[0] === "NOT") return exp[1];
   return ["NOT", exp];
 }
-
+/**
+ * @description 'Subset check' implementation for custom created type expression
+ */
 export function subset(exp1, exp2): boolean {
   const e = evaluate(["NOT", ["OR", ["NOT", exp1], exp2]]);
   if (!isArray(e)) return !e;
   const { vars, clauses } = booleanCnf(e);
   return !naiveDpll(clauses, vars);
 }
-
+/**
+ * @description 'Extract Parameters' implementation for custom created type expression
+ */
 export function extractParams(exp): Expression[] {
   const params = new Set<Expression>();
   map(exp, e => {

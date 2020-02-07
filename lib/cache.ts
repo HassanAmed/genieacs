@@ -119,15 +119,19 @@ export async function pop(key): Promise<any> {
   return null;
 }
 /**
- * 
+ * @description A database lock is used to “lock” some data in a database so that only one database
+ *  user/session may update that particular data.
  * @param lockName 
  * @param ttl 
  */
 export async function lock(lockName, ttl): Promise<Function> {
+  //generate a token
   const token = Math.random()
     .toString(36)
     .slice(2);
-
+/**
+ * @description unlock or extend lock time to live
+ */
   async function unlockOrExtend(extendTtl): Promise<void> {
     if (!extendTtl) {
       const res = await mongoCollection.deleteOne({

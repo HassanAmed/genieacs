@@ -61,6 +61,7 @@ declare global {
 /**
  * @ignore 
  */
+//ignored because its redundant mentioning explicitly
 declare module "fs" {
   interface WriteStream {
     fd?: number;

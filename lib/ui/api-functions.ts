@@ -93,10 +93,10 @@ export async function deleteResource(resource, id): Promise<void> {
 }
 /**
  * @description Function used by apis to post a new Task
- * @param deviceId 
- * @param tasks 
- * @param timeout 
- * @param device 
+ * @param deviceId Device Id
+ * @param tasks task to post
+ * @param timeout Timeout
+ * @param device device instance
  */
 export async function postTasks(
   deviceId,
