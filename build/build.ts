@@ -17,6 +17,9 @@
  * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+ /**
+  * @description This is build script to build the project
+  */
 import * as path from "path";
 import * as fs from "fs";
 import { promisify } from "util";
@@ -32,7 +35,9 @@ import postcssPresetEnv from "postcss-preset-env";
 import cssnano from "cssnano";
 import SVGO from "svgo";
 import * as xmlParser from "../lib/xml-parser";
-
+/**
+ * @description If mode is set in environment get it otherwise set it to production.
+ */
 const MODE = process.env["NODE_ENV"] || "production";
 
 const BUILD_METADATA = new Date()
@@ -80,7 +85,10 @@ const externals = [
   "codemirror/mode/yaml/yaml",
   "ipaddr.js"
 ];
-
+/**
+ * @description Delete the provided dir in path
+ * @param dirPath directory path
+ */
 function rmDirSync(dirPath): void {
   if (!fs.existsSync(dirPath)) return;
   const files = fs.readdirSync(dirPath);
@@ -92,7 +100,10 @@ function rmDirSync(dirPath): void {
   }
   fs.rmdirSync(dirPath);
 }
-
+/**
+ * @description Delete any previous dev dependencies
+ * @param deps dependencies
+ */
 function stripDevDeps(deps): void {
   if (!deps["dependencies"]) return;
   for (const [k, v] of Object.entries(deps["dependencies"])) {
@@ -101,7 +112,10 @@ function stripDevDeps(deps): void {
   }
   if (!Object.keys(deps["dependencies"]).length) delete deps["dependencies"];
 }
-
+/**
+ * @description Fn to convert xml To string
+ * @param xml 
+ */
 function xmlTostring(xml): string {
   const children = [];
   for (const c of xml.children || []) children.push(xmlTostring(c));
@@ -110,7 +124,9 @@ function xmlTostring(xml): string {
     ? children.join("")
     : `<${xml.name} ${xml.attrs}>${children.join("")}</${xml.name}>`;
 }
-
+/**
+ * @description Fn to generate symbol from svg string
+ */
 function generateSymbol(id: string, svgStr: string): string {
   const xml = xmlParser.parseXml(svgStr);
   const svg = xml.children[0];
@@ -129,7 +145,9 @@ function generateSymbol(id: string, svgStr: string): string {
     .join("");
   return `<symbol id="icon-${id}" ${viewBox}>${symbolBody}</symbol>`;
 }
-
+/**
+ * @description Initialize building by removing old directories making new layout adding pkg.json etc
+ */
 async function init(): Promise<void> {
   // Delete any old output directory
   rmDirSync(OUTPUT_DIR);
@@ -166,7 +184,9 @@ async function init(): Promise<void> {
     JSON.stringify(npmShrinkwrapJson, null, 2)
   );
 }
-
+/**
+ * @description Copying static files
+ */
 async function copyStatic(): Promise<void> {
   const files = [
     "LICENSE",
@@ -183,7 +203,9 @@ async function copyStatic(): Promise<void> {
     );
   }
 }
-
+/**
+ * @description Fn to generate css from css files on given path
+ */
 async function generateCss(): Promise<void> {
   const cssInPath = path.resolve(INPUT_DIR, "ui/css/app.css");
   const cssOutPath = path.resolve(OUTPUT_DIR, "public/app.css");
@@ -201,7 +223,9 @@ async function generateCss(): Promise<void> {
   ]).process(cssIn, { from: cssInPath, to: cssOutPath });
   fs.writeFileSync(cssOutPath, cssOut.css);
 }
-
+/**
+ * @description Generate build tools 
+ */
 async function generateToolsJs(): Promise<void> {
   for (const bin of ["dump-data-model"]) {
     const inputFile = path.resolve(INPUT_DIR, `tools/${bin}`);
@@ -239,7 +263,9 @@ async function generateToolsJs(): Promise<void> {
     fs.chmodSync(outputFile, mode | 73);
   }
 }
-
+/**
+ * @description Create binaries for all services
+ */
 async function generateBackendJs(): Promise<void> {
   for (const bin of [
     "genieacs-cwmp",
@@ -298,7 +324,10 @@ async function generateBackendJs(): Promise<void> {
     fs.chmodSync(outputFile, mode | 73);
   }
 }
-
+/**
+ * @description Generate frontend from files in UI folder
+ * (app.ts files uses all ui files to create frontend)
+ */
 async function generateFrontendJs(): Promise<void> {
   const inputFile = path.resolve(INPUT_DIR, "ui/app.ts");
   const outputFile = path.resolve(OUTPUT_DIR, "public/app.js");
@@ -354,7 +383,9 @@ async function generateFrontendJs(): Promise<void> {
   const stats = await promisify(webpack)(webpackConf);
   process.stdout.write(stats.toString({ colors: true }) + "\n");
 }
-
+/**
+ * @description Generate icons sprite (A single image containing all icons)
+ */
 async function generateIconsSprite(): Promise<void> {
   const svgo = new SVGO({ plugins: [{ removeViewBox: false }] });
   const symbols = [];
@@ -370,7 +401,9 @@ async function generateIconsSprite(): Promise<void> {
     `<svg xmlns="http://www.w3.org/2000/svg">${symbols.join("")}</svg>`
   );
 }
-
+/**
+ * @description Build everything by generating all components of platform
+ */
 init()
   .then(() => {
     Promise.all([
