@@ -39,7 +39,7 @@ import * as notifications from "./notifications";
 import { contextifyComponent } from "./components";
 import { PermissionSet, UiConfig } from "../lib/types";
 /**
- * @description A global interface that having sub interfaces.
+ * @ignore
  */
 declare global {
   interface Window {
