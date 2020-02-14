@@ -1,20 +1,10 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements api-function used by api-functions file in lib/ui these function are more low
+level like making connection Request to device.
+
+####################################################################################################
  */
 
 import { parse } from "url";
@@ -34,22 +24,23 @@ import { Expression, Task } from "./types";
 import { flattenDevice } from "./mongodb-functions";
 import { evaluate } from "./common/expression";
 /**
- * @description Create an http udp Connection Request (used by apis)
- * @param deviceId Device Id
- * @param device device
+ * @description Create an http udp Connection Request. This connection 
+ * request is used by commit api to make connetion with device CPE
+ * @param deviceId Device Id (whom you want to send connection Request)
+ * @param device device 
  */
 export async function connectionRequest(
   deviceId: string,
   device?: {}
 ): Promise<void> {
-  if (!device) {
+  if (!device) { // if device object is not passed search in db from its id
     const res = await db.devicesCollection.findOne({ _id: deviceId });
     if (!res) throw new Error("No such device");
-    device = flattenDevice(res);
+    device = flattenDevice(res); // flatten nested objects into one
   }
 
   let connectionRequestUrl, udpConnectionRequestAddress, username, password;
-
+// extract connection properties from device data model(retrieved from db above) used to make connectin request to device.
   if (device["InternetGatewayDevice.ManagementServer.ConnectionRequestURL"]) {
     connectionRequestUrl = (device[
       "InternetGatewayDevice.ManagementServer.ConnectionRequestURL"
@@ -107,7 +98,7 @@ export async function connectionRequest(
     }
     return exp;
   };
-
+// snapshot is current configurations snapshot
   const snapshot = await getCurrentSnapshot();
   const now = Date.now();
   const UDP_CONNECTION_REQUEST_PORT = +getConfig(
@@ -161,6 +152,7 @@ export async function connectionRequest(
   }
 
   try {
+    // Try make a httpConnectionRequest (http requests are TCP Request that handle data better mostly)
     await httpConnectionRequest(
       connectionRequestUrl,
       authExp,
@@ -169,9 +161,9 @@ export async function connectionRequest(
       debug,
       deviceId
     );
-  } catch (err) {
-    if (!udpProm) throw err;
-    await udpProm;
+  } catch (err) { // if http/tcp request fails try udp request
+    if (!udpProm) throw err; //if we dont have udpConnectionRequestAddress this fails too throw error
+    await udpProm; //if we have udpConnectionRequestAddress wait to request to be completed
   }
 }
 /**
@@ -187,21 +179,21 @@ export async function watchTask(deviceId, taskId, timeout): Promise<string> {
     { _id: taskId },
     { projection: { _id: 1 } }
   );
-  if (!task) return "completed";
+  //Tasks when done are deleted from db so if no task in db means its done
+  if (!task) return "completed"; 
 
   const q = { _id: `${deviceId}:task_${taskId}` };
-  const fault = await db.faultsCollection.findOne(q, {
+  const fault = await db.faultsCollection.findOne(q, { //if task was queued an not done means it ended up in fault or timeout
     projection: { _id: 1 }
   });
-  if (fault) return "fault";
+  if (fault) return "fault"; 
 
   if ((timeout -= 500) <= 0) return "timeout";
 
-  return watchTask(deviceId, taskId, timeout);
+  return watchTask(deviceId, taskId, timeout); //callback again if no condition met.
 }
 /**
- * @description check task expiry timestamp and assign new if expired
- * @param task 
+ * @description check task if its actually a valid task or not for example if someone tries to set and
  */
 function sanitizeTask(task): void {
   task.timestamp = new Date(task.timestamp || Date.now());

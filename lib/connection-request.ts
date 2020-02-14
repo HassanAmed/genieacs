@@ -1,20 +1,11 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements function to establish http (tcp) or udp connection requests to device/CPE
+This file is used by api-functions(lib) which uses it to make connection with device upon an api
+request from ui
+
+####################################################################################################
  */
 
 import * as crypto from "crypto";
@@ -64,7 +55,8 @@ async function extractAuth(
   return [username, password, _exp];
 }
 /**
- * @summary create and http get request used by httpConnectionRequest function 
+ * @summary create an http get request to device if no response device is offline
+ *  used by httpConnectionRequest function 
  * @param options 
  * @param timeout 
  * @param _debug 
@@ -211,7 +203,7 @@ export async function udpConnectionRequest(
   // the firewall. This does require that the Genieacs NBI and STUN server
   // are allowed to bind to the same address and port. The STUN server needs
   // to open its UDP port with the SO_REUSEADDR option, allowing the NBI to
-  // also bind to the same port.
+  // also bind to the same port. /* comment by author */
   if (sourcePort) client.bind({ port: sourcePort, exclusive: true });
 
   let username: string;

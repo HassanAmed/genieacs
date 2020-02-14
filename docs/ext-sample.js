@@ -1,6 +1,7 @@
 // This is an exmaple GenieACS extension to get the current latitude/longitude
 // of the International Space Station. Why, you ask? Because why not.
 // To install, copy this file to config/ext/iss.js.
+// config file has been deprecated for v.1.2.0 check pre-release notes on github
 
 "use strict";
 

@@ -1,0 +1,13 @@
+File description for all pages files
+
+All the files are named against their page and each file that has "page" in it means that it
+create page component of that specific page which is then used in app.ts to render.
+
+All files are indiviual components which bundle together to create frontend view.
+Most of files names are self explanatory for thier description. 
+Inside components are basic front end triggers like onclick() trigger. Please run the server and 
+then go throught each page code file while you see ui so that it will be self explainatory for you
+to understand.
+
+There is putActionHandler() function in each page file that calls store function to make api
+requests.

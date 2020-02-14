@@ -1,20 +1,13 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements some functions which are used by apis in api.ts. This is to group different
+things differently so api.ts only contains apis and function it uses are put here.
+
+Note Functions this file implements are also dependent on functions from another api-functions.ts
+file in parent directory of this folder (main lib folder).
+
+####################################################################################################
  */
 
 import { ObjectID } from "mongodb";
@@ -51,7 +44,7 @@ async function deleteFault(id): Promise<void> {
  * @param id resource id
  */
 export async function deleteResource(resource, id): Promise<void> {
-  switch (resource) {
+  switch (resource) { //check which resource to delete and call respective db delete method to do so
     case "devices":
       await deleteDevice(id);
       break;
@@ -92,7 +85,7 @@ export async function deleteResource(resource, id): Promise<void> {
   await del("presets_hash");
 }
 /**
- * @description Function used by apis to post a new Task
+ * @description Function used by apis to post queued tasks to device.
  * @param deviceId Device Id
  * @param tasks task to post
  * @param timeout Timeout
@@ -108,26 +101,26 @@ export async function postTasks(
     delete task._id;
     task.device = deviceId;
   }
-
+// Insert new tasks that is to be done to db and set status pending
   tasks = await insertTasks(tasks);
   const statuses = tasks.map(t => {
     return { _id: t._id, status: "pending" };
   });
-
+// delete device previously faulted tasks against this key if any
   await del(`${deviceId}_tasks_faults_operations`);
 
   try {
-    await connectionRequest(deviceId, device);
+    await connectionRequest(deviceId, device); // create http(tcp) or udp connection with device
   } catch (err) {
     return {
       connectionRequest: err.message,
       tasks: statuses
     };
   }
-
+  // array is 0 index so pointing to current task
   const sample = tasks[tasks.length - 1];
 
-  // Waiting for session to finish or timeout
+  // Waiting for session to finish or timeout or return completed if tasks is done
   await watchTask(deviceId, sample._id, timeout);
 
   const promises = [];
@@ -146,10 +139,10 @@ export async function postTasks(
       r.status = "fault";
       r.fault = res[i * 2 + 1][0];
     }
-    db.deleteTask(r._id);
+    db.deleteTask(r._id); // all tasks that are done are deleted from db
   }
 
-  return { connectionRequest: "OK", tasks: statuses };
+  return { connectionRequest: "OK", tasks: statuses }; //return response with task statuse.
 }
 /**
  * @description Interface for ping response

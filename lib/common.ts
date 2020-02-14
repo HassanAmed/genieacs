@@ -1,3 +1,11 @@
+
+/**
+#####################################    File Description    #######################################
+
+This  file implements some common functionlaties used by multiple other files
+
+####################################################################################################
+ */
 export const UNDEFINED_TYPE = "[object Undefined]";
 export const NULL_TYPE = "[object Null]";
 export const BOOLEAN_TYPE = "[object Boolean]";

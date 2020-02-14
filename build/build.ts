@@ -1,20 +1,16 @@
+
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This file is an executable file to run cwmp-server. Mainly this files imports all other small compo-
+nents from code files in lib and runs server. Mainly the tasks it performs are in this order
+- Start logger (for logging any activity)
+- Get configurations for cwmp
+- Implementations of functions to stop service on stop signals (SIGINT & SIGTERM)
+- Clustering
+- Import cwmp listener and onConnection method and start server.
+
+####################################################################################################
  */
 
  /**
@@ -86,7 +82,7 @@ const externals = [
   "ipaddr.js"
 ];
 /**
- * @description Delete the provided dir in path
+ * @description Delete the provided dir in path(used to delete old output directorys)
  * @param dirPath directory path
  */
 function rmDirSync(dirPath): void {
@@ -331,7 +327,7 @@ async function generateBackendJs(): Promise<void> {
 async function generateFrontendJs(): Promise<void> {
   const inputFile = path.resolve(INPUT_DIR, "ui/app.ts");
   const outputFile = path.resolve(OUTPUT_DIR, "public/app.js");
-
+// compile small components of code into larger structre
   const bundle = await rollup({
     input: inputFile,
     external: externals,
@@ -379,7 +375,7 @@ async function generateFrontendJs(): Promise<void> {
       filename: "app.js"
     }
   };
-
+// webpack is js module bundler
   const stats = await promisify(webpack)(webpackConf);
   process.stdout.write(stats.toString({ colors: true }) + "\n");
 }

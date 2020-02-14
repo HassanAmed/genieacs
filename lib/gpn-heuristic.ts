@@ -1,35 +1,25 @@
-import Path from "./common/path";
-
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-const WILDCARD_MULTIPLIER = 2;
-const UNDISCOVERED_DEPTH = 7;
-/** 
-@description Simple heuristic to estimate GPN(Global Production Network) count given a set of patterns to be
+#####################################    File Description    ####################################### 
+ 
+Simple heuristic to estimate GPN(Global Production Network) count given a set of patterns to be
 discovered. Used to decide whether to use nextLevel = false in GPN.
 gpnPatterns is [pattern, flags]
 pattern is a path (array)
 flags is an int where its bits mark the segments in the pattern that
 need refreshing. Leading 0s indicate that the pattern up to that
 point has been discovered.
-*/
+
+**Function is used by session to estimate load on server**
+
+####################################################################################################
+ */
+import Path from "./common/path";
+
+
+
+const WILDCARD_MULTIPLIER = 2;
+const UNDISCOVERED_DEPTH = 7;
+
 export function estimateGpnCount(
   gpnPatterns: [Path, number][],
   depth: number = 0

@@ -1,4 +1,13 @@
-const NONEXISTENT = Symbol();
+/**
+#####################################    File Description    #######################################
+
+This file implements a class versioned map that is similar to map data stucture. Versioned map is 
+used by timestamps and attibutes properties of deviceData.
+
+####################################################################################################
+ */
+
+ const NONEXISTENT = Symbol();
 const UNDEFINED = undefined;
 
 interface Revisions<V> {
@@ -6,7 +15,7 @@ interface Revisions<V> {
   delete?: number;
 }
 /**
- * @description Versioned map is a class whose instances are used by timestamp and attributes interfaces
+ * @description Versioned map is a class whose instances are used by timestamp and attributes.
  */
 export default class VersionedMap<K, V> {
   private _sizeDiff: number[];
@@ -20,7 +29,7 @@ export default class VersionedMap<K, V> {
     this.map = new Map();
     this.dirty = 0;
   }
-
+// map size function
   public get size(): number {
     return this.map.size + this._sizeDiff[this.revision];
   }
@@ -35,7 +44,7 @@ export default class VersionedMap<K, V> {
 
     this._revision = rev;
   }
-
+// get element value against a key
   public get(key: K, rev = this._revision): V {
     const revisions = this.map.get(key);
     if (!revisions) return UNDEFINED;
@@ -53,7 +62,7 @@ export default class VersionedMap<K, V> {
     if (v === NONEXISTENT) return false;
     return true;
   }
-
+// set a key value pair in map
   public set(key: K, value: V, rev = this._revision): this {
     let revisions = this.map.get(key);
     if (!revisions) {

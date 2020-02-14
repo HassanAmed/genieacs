@@ -1,25 +1,18 @@
 #!/usr/bin/env -S node -r esm -r ts-node/register/transpile-only
 
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This file is an executable file for gneieacs-ext(ension) service. It has only two main things
+
+- Implementations of function to convert error to fault (Fault is predefined standard interface
+  to store error occured)
+- If any uncaught error occurs on a process run this function.
+
+####################################################################################################
  */
 
- // *This extension service is for converting error to faults we store all errors as faults in db.
+ // This extension service is for converting error to faults we store all errors as faults in db.
 import { Fault } from "../lib/types";
 
 const jobs = new Set();
@@ -59,7 +52,12 @@ function errorToFault(err: Error): Fault {
 
   return fault;
 }
-
+/**
+ * When an uncaught exception/error occurs its is passed to errorToFault
+ * function to convert into fault and then process.send (process.send is method to
+ * communicate back with the process that spawned them) sends all faults to parent process and 
+ * clears the set.
+ */
 process.on("uncaughtException", err => {
   const fault = errorToFault(err);
   jobs.forEach(jobId => {
@@ -68,7 +66,9 @@ process.on("uncaughtException", err => {
   jobs.clear();
   process.disconnect();
 });
-
+/**
+ * Send error message as well (message is one of property of fault)
+ */
 process.on("message", message => {
   jobs.add(message[0]);
 

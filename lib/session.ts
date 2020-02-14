@@ -1,21 +1,12 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This file all the functions to handle session between cwmp and devices. Run provision presets and
+declaration on devices in short each and every task to be peformed on device is run by functions
+implemented in this file.
+####################################################################################################
  */
+
 
 import * as device from "./device";
 import * as sandbox from "./sandbox";
@@ -76,7 +67,7 @@ function initDeviceData(): DeviceData {
   };
 }
 /**
- * @description Initialize a session 
+ * @description Initialize a session by declaring defaults for sessionContext object and reutnr it
  * @param deviceId Device ID
  * @param cwmpVersion CwmpVersion
  * @param timeout Timeout to init
@@ -154,7 +145,7 @@ export function configContextCallback(
   return exp;
 }
 /**
- * @description Push Device data to rpc Request parameterlist and inform when done.
+ * @description Push Device data via rpc Request parameterlist and inform when done.
  * @param sessionContext sessionContext object
  * @param rpcReq rpc Request
  * @returns Resloves promise and returns AcsResponse object
@@ -507,7 +498,9 @@ export async function timeoutOperations(
   return { faults, operations };
 }
 /**
- * @description Add New Provisons
+ * @description Add New Provisons A provision is sandboxed Javascript code that is executed on a
+ * per device basis. Provisions are mapped to devices using presets. Anything that can be done 
+ * through preset configuration can be done in a provision script.
  * @param sessionContext sessionContext object
  * @param channel Channel
  * @param provisions Provisions to add
@@ -571,7 +564,7 @@ export function addProvisions(
   }
 }
 /**
- * @description Clear all provisions
+ * @description Clear all provisions current session
  * @param sessionContext sessionContext object
  */
 export function clearProvisions(sessionContext: SessionContext): void {
@@ -693,7 +686,9 @@ async function runProvisions(
   };
 }
 /**
- * @description Run new virtual params if no error => save if error found => faults 
+ * @description Virtual parameters are user-defined parameters whose values are generated 
+ * using custom Javascript code. Virtual parameters behave just like regular parameters and
+ * appear in the data model under "VirtualParameters." path.
  * @param sessionContext sessionContext object
  * @param provisions provisions
  * @param startRevision revsion number used by fn run() sandbox.ts 
@@ -817,7 +812,8 @@ async function runVirtualParameters(
   };
 }
 /**
- * @description Run new declarations 
+ * @description Run new declarations (declaraitons are js code to be run on devices to perform 
+ * any task)
  * @param sessionContext sessionContext object
  * @param declarations declaration
  * @returns Return processed declarations
@@ -1049,7 +1045,7 @@ function runDeclarations(
  * @description Make an rpc request
  * @param sessionContext sessionContext object 
  * @param _declarations declarations
- * @returns An object containg newly generated rpcID.
+ * @returns Object containg newly generated rpcID along with rpcRequest extracted from sessionContext
  */
 export async function rpcRequest(
   sessionContext: SessionContext,
@@ -1062,7 +1058,7 @@ export async function rpcRequest(
       rpc: sessionContext.rpcRequest
     };
   }
-
+// if no session return null
   if (
     !sessionContext.virtualParameters.length &&
     !sessionContext.declarations.length &&
@@ -2003,7 +1999,9 @@ function generateSetVirtualParameterProvisions(
   return provisions;
 }
 /**
- * @description Process declarations push to virtualParameterDeclations[]
+ * @description CPE Presets and Provisioning allow us to perform actions on them throught scripts
+ * These scripts have declarations (here we process declarations) for example to reboot device
+ * declare("Reboot", null, {value: Date.now()}); in provision script.
  * @param sessionContext sessionContext object
  * @param allDeclareTimestamps Timestamps
  * @param allDeclareAttributeTimestamps AttributeTimestamps
@@ -2361,7 +2359,8 @@ function processInstances(
   }
 }
 /**
- * /@description get Rpc response 
+ * /@description function to create Rpc response of rpcRequest (provisioning is done on CPE throught
+ * remote procedure calls)
  * @param sessionContext sessionObject
  * @param id ID 
  * @param _rpcRes Cpe Response
@@ -2551,7 +2550,7 @@ export async function rpcResponse(
       }
 
       return;
-    case "SetParameterValuesResponse":
+    case "SetParameterValuesResponse": //set params of device 
       if (rpcReq.name !== "SetParameterValues")
         throw new Error("Response name does not match request name");
 
@@ -2570,7 +2569,7 @@ export async function rpcResponse(
       }
 
       break;
-    case "AddObjectResponse":
+    case "AddObjectResponse":// add object in device
       toClear = device.set(
         sessionContext.deviceData,
         Path.parse(rpcReq.objectName + rpcRes.instanceNumber),
@@ -2579,7 +2578,7 @@ export async function rpcResponse(
         toClear
       );
       break;
-    case "DeleteObjectResponse":
+    case "DeleteObjectResponse": //delete object
       toClear = device.set(
         sessionContext.deviceData,
         Path.parse(rpcReq.objectName.slice(0, -1)),
@@ -2588,7 +2587,7 @@ export async function rpcResponse(
         toClear
       );
       break;
-    case "RebootResponse":
+    case "RebootResponse": //reboot device
       toClear = device.set(
         sessionContext.deviceData,
         Path.parse("Reboot"),
@@ -2597,7 +2596,7 @@ export async function rpcResponse(
         toClear
       );
       break;
-    case "FactoryResetResponse":
+    case "FactoryResetResponse": //facotry reset device
       toClear = device.set(
         sessionContext.deviceData,
         Path.parse("FactoryReset"),
@@ -2606,7 +2605,7 @@ export async function rpcResponse(
         toClear
       );
       break;
-    case "DownloadResponse":
+    case "DownloadResponse": //download
       toClear = device.set(
         sessionContext.deviceData,
         Path.parse(`Downloads.${rpcReq.instance}.Download`),
@@ -2701,7 +2700,7 @@ export async function rpcResponse(
   }
 }
 /**
- * @description Get rpc fault
+ * @description function to create an rpc fault to be used if rpc call end up in error
  * @param sessionContext sessionContext instance
  * @param id rpc ID
  * @param faultResponse cpe Fault
@@ -2791,7 +2790,7 @@ export async function deserialize(
   return sessionContext;
 }
 /**
- * @description serialize sessionContext
+ * @description serialize sessionContext.
  * @returns sessionContextString & resolves promise
  */
 export async function serialize(

@@ -104,7 +104,7 @@ export function structureConfig(config: Config[]): any {
   return toArray(_config);
 }
 /**
- * @description difnference in configs
+ * @description difference in configs
  * @param current
  * @param target 
  */

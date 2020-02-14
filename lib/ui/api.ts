@@ -1,22 +1,14 @@
-/**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
- */
 
+/**
+#####################################    File Description    #######################################
+
+This  file contains all the apis(api-handlers) built on geneiacs-ui server. All api requests are dealt
+with here and perform tasks on db or connect with device or whatever has to be based on type of 
+requests made.
+It uses koa-router for api routing 
+
+####################################################################################################
+ */
 import * as stream from "stream";
 import Router from "koa-router";
 import * as db from "./db";
@@ -487,7 +479,10 @@ router.put("/files/:id", async (ctx, next) => {
   ctx.body = "";
 });
 /**
- * @description Handle Post Requests (POST api for device tasks)
+ * @description Handle Post Requests (POST api for device tasks) only posts request makes
+ * with device and change any of its properties or reset reboot or perform any task on them
+ *(Rests of requests end up in db) as only in this api connection is made with device
+ * Whenever we commit connection request is made to device.
  * All actions from ui come in form of queued tasks
  */
 router.post("/devices/:id/tasks", async (ctx, next) => {

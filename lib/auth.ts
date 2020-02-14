@@ -1,20 +1,14 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+As name suggests this files implements authorization function(like header authorization) which are
+used by cwmp-server while making connection with device and connectionRequest file which also make
+connection requests to device.
+
+Authorization in common implements different type of function they are to check if a user has 
+permission to access a db resource while this auth file is for authorization on (SOAP)httpRequests
+
+####################################################################################################
  */
 
 import { createHash, randomBytes, pbkdf2 } from "crypto";

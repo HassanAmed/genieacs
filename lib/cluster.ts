@@ -1,20 +1,14 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements clustering
+
+A single instance of Node.js runs in a single thread. To take advantage of multi-core systems, 
+the user will sometimes want to launch a cluster of Node.js processes to handle the load.
+
+The cluster module allows easy creation of child processes that all share server ports.
+
+####################################################################################################
  */
 
 import cluster from "cluster";

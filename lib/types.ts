@@ -1,20 +1,11 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This file defines all the Type Aliases (an interface like concept in ts but slightly different) and
+all the interfaces so as to predefine model of all different things that will be used such as Fault,
+Preset, Provision, Session context.
+
+####################################################################################################
  */
 
 import Path from "./common/path";
@@ -26,7 +17,7 @@ import { Script } from "vm";
 /**
  * @description Custom Type Alias that can be of any dataType of string,number,boolean,null,any[]
  * Note: Basic functions custom implementation is provided in expressions.ts for this custom
- * expression data type
+ * expression data type Also detail about why this type alias is used.
  */
 export type Expression = string | number | boolean | null | any[];
 /**
@@ -90,7 +81,7 @@ export interface DeviceData {
   changes: Set<string>;
 }
 /**
- * Interface to predefine model.
+ * Type Alias for virtaul params
  */
 export type VirtualParameterDeclaration = [
   Path,
@@ -366,7 +357,7 @@ export interface Declaration {
   defer: boolean;
 }
 /**
- * Interface to predefine model.
+ * Type Alias 
  */
 export type Clear = [
   Path,

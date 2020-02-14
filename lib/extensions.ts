@@ -114,7 +114,11 @@ function kill(process: ChildProcess): Promise<void> {
   });
 }
 /**
- * @summary Kill all processes - used when server is terminated.
+ * @summary Kill all node processes - used when server is terminated/stopped. (A single instance
+ * of Node.js runs in a single thread. To take advantage of multi-core systems,the user will
+ * sometimes want to launch a cluster of Node.js processes to handle the load.) so all these
+ * child processes need to be terminated.
+ * 
  */
 export async function killAll(): Promise<void> {
   await Promise.all(

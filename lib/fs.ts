@@ -1,20 +1,11 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements a listener for file server that listen to get requests of device/CPE and 
+transfer file to them in response(They get files from db)
+
+
+####################################################################################################
  */
 
 import * as url from "url";
@@ -25,7 +16,8 @@ import * as db from "./db";
 import * as logger from "./logger";
 import { getRequestOrigin } from "./forwarded";
 /**
- * @description Listener for fs server only Get Method allowed on this server
+ * @description Listener for fs server only listens for Get Method on this server as 
+ * CPE will make get request to file server to get file and download on its own storage.
  * @param request Incoming Message
  * @param response Server Response
  */
@@ -36,16 +28,16 @@ export function listener(
   const urlParts = url.parse(request.url, true);
   if (request.method === "GET") {
     const filename = querystring.unescape(urlParts.pathname.substring(1));
-
+// log object to for creating logs of the operation
     const log = {
       message: "Fetch file",
       filename: filename,
       remoteAddress: getRequestOrigin(request).remoteAddress
     };
-
+// search if file is in db (files are added in db by admin using interface )
     db.filesCollection.findOne({ _id: filename }, (err, file) => {
       if (err) throw err;
-
+// if there is no file then send 404 response not found
       if (!file) {
         response.writeHead(404);
         response.end();
@@ -53,7 +45,7 @@ export function listener(
         logger.accessError(log);
         return;
       }
-
+// Sending file in response if found
       response.writeHead(200, {
         "Content-Type": file.contentType || "application/octet-stream",
         "Content-Length": file.length
@@ -62,10 +54,11 @@ export function listener(
       const bucket = new GridFSBucket(db.client.db());
       const downloadStream = bucket.openDownloadStreamByName(filename);
       downloadStream.pipe(response);
-
+//logging the operations (using log object we created at start of function)
       logger.accessInfo(log);
     });
-  } else {
+  } else // only get requests allowed on this fs-server
+   {
     response.writeHead(405, { Allow: "GET" });
     response.end("405 Method Not Allowed");
   }

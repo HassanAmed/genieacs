@@ -1,20 +1,11 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This is file for ui-server but instead of making its own listener and everything using http module 
+for this server we simply used koa (a server just like express).
+It intializes the platform with default seed informations from init.ts file
+
+####################################################################################################
  */
 
 import { Z_SYNC_FLUSH } from "zlib";
@@ -49,7 +40,7 @@ const router = new Router();
 
 const JWT_SECRET = "" + config.get("UI_JWT_SECRET");
 const JWT_COOKIE = "genieacs-ui-jwt";
-
+// memoize permission set
 const getAuthorizer = memoize(
   (snapshot: string, rolesStr: string): Authorizer => {
     const roles: string[] = JSON.parse(rolesStr);
@@ -60,11 +51,12 @@ const getAuthorizer = memoize(
     return new Authorizer(permissionSets);
   }
 );
-
+// if error occus throw error
 koa.on("error", async err => {
   throw err;
 });
-
+// add middleware for enabling snapshot used when we start server to access db data
+//(All koa.use add a middleware to the server)
 koa.use(async (ctx, next) => {
   const configSnapshot = await localCache.getCurrentSnapshot();
   ctx.state.configSnapshot = configSnapshot;
@@ -72,7 +64,7 @@ koa.use(async (ctx, next) => {
   ctx.set("GenieACS-Version", VERSION);
   return next();
 });
-
+// add middleware for JWT token
 koa.use(
   koaJwt({
     secret: JWT_SECRET,
@@ -89,7 +81,7 @@ koa.use(
     }
   })
 );
-
+// add middleware for authorization
 koa.use(async (ctx, next) => {
   let roles: string[] = [];
 
@@ -112,7 +104,7 @@ koa.use(async (ctx, next) => {
 
   return next();
 });
-
+// Login route to which you are redirected initially when you start a platform
 router.post("/login", async ctx => {
   if (!JWT_SECRET) {
     ctx.status = 500;
@@ -151,7 +143,7 @@ router.post("/login", async ctx => {
 
   failure();
 });
-
+// logout route 
 router.post("/logout", async ctx => {
   ctx.cookies.set(JWT_COOKIE); // Delete cookie
   ctx.body = "";
@@ -168,7 +160,7 @@ koa.use(async (ctx, next) => {
 
   return next();
 });
-
+// parsing middleware
 koa.use(koaBodyParser());
 router.use("/api", api.routes(), api.allowedMethods());
 
@@ -197,7 +189,8 @@ router.get("/init", async ctx => {
   ctx.body = status;
 });
 /**
- * Api to initialize seed information
+ * As we run platform Initialize and seed default data get data from db if we have 
+ * any about users or devices get permission configs and all defaults 
  */
 router.post("/init", async ctx => {
   const status = ctx.request.body;
@@ -216,10 +209,12 @@ router.post("/init", async ctx => {
     if (!ctx.state.authorizer.hasAccess("provisions", 3))
       status["presets"] = false;
   }
+  //seed initializing data
   await init.seed(status);
   ctx.body = "";
 });
-
+// All css and basic html page of platform It is a single page application so this is main html page
+// rest of pages uses same html (see single page application on google for more detail )
 router.get("/", async ctx => {
   const permissionSets: PermissionSet[] = ctx.state.authorizer.getPermissionSets();
 
@@ -252,14 +247,14 @@ router.get("/", async ctx => {
   </html>
   `;
 });
-
+// a compression middleware to save bandwith and speed up things
 koa.use(
   koaCompress({
     flush: Z_SYNC_FLUSH
   })
 );
-
+// koa doesn't have a built in router(like express) so explicitly add router middleware for routing 
 koa.use(router.routes());
 koa.use(koaStatic(config.ROOT_DIR + "/public"));
-
+//export listener
 export const listener = koa.callback();

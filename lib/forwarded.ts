@@ -97,7 +97,7 @@ function parseForwardedHeader(str: string): { [name: string]: string } {
   return res;
 }
 /**
- * @description Get origin of request
+ * @description Get origin of request local and remote addresses and port host etc
  * @param request request
  */
 export function getRequestOrigin(request: IncomingMessage): RequestOrigin {

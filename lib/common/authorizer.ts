@@ -1,26 +1,17 @@
+
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This file is implements an Authorization class which have auth functions which are used by Apis in order when requests are
+to make sure user making request is authorized to access a resource in db or not.
+
+####################################################################################################
  */
 
 import { PermissionSet, Expression } from "../types";
 import { evaluate, or } from "./expression";
 /**
- * @description Authorizer class  implements methods to enforce and check authorization.
+ * @description Authorizer class implements methods to enforce and check authorization.
  */
 export default class Authorizer {
   private permissionSets: PermissionSet[];
@@ -151,7 +142,7 @@ export default class Authorizer {
     this.validatorCache.set(resource, validator);
     return validator;
   }
-
+// Get current permission set
   public getPermissionSets(): PermissionSet[] {
     return this.permissionSets;
   }

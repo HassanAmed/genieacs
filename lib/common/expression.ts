@@ -1,29 +1,19 @@
+
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
- */
-//#################################################################################################//
-/**
- * @description In genieacs platform the CPE devices properties (IP,Name,MAC etc) can have different data types
- * for example IP-> Number , Name-> string some maybe object and this may also differ based on CPE of different
- * comapnies so to provide consistency author made new data type expression which can be anything
- * (string number null based on what it gets).
- * Now in this files he has explicitly made all operations for expression type 
- * 
+#####################################    File Description    #######################################
+
+This file implemets basic math function for Expression data type for exmple like operator OR operator
+Expression is a custom type there we dont have inbuilt function for these operators that is why they
+are implemented explicitly.
+
+Why Expression Type?
+In genieacs platform the CPE devices properties (IP,Name,MAC, isLive etc) can have different data types
+for example IP-> Number , Name-> string Live -> boolean some maybe object and this may also differ
+based on CPE of different comapnies so  it is possible one company deviceID is string in other CPE it 
+is number so to provide consistency author made new data type expression which can be anything
+(string number null based on what it gets).
+
+####################################################################################################
  */
 import { map, mapAsync, parseLikePattern } from "./expression-parser";
 import { booleanCnf } from "./expression-cnf";

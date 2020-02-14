@@ -1,4 +1,13 @@
 /**
+#####################################    File Description    #######################################
+
+This file simply implements an instance interface and instanceSet class having all operations which
+a set has.
+
+
+####################################################################################################
+ */
+/**
  * @description Instance interface
  */
 interface Instance {

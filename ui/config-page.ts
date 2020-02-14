@@ -128,7 +128,7 @@ export function init(): Promise<{}> {
       .catch(reject);
   });
 }
-
+// render table on the config subpage in admin page 
 function renderTable(confsResponse, searchString): Children {
   const confs = confsResponse.value.sort((a, b) => {
     return a._id < b._id ? -1 : 1;

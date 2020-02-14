@@ -1,20 +1,20 @@
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements creats a cwmp (CPE WAN management protocol) server for platform. This is the 
+server that discovers device, established sessions with them and check which device are online. It
+listens to CPE post(inform) requests.
+
+This file contains functions that have implements complete http server for SOAP requests a listener
+and a onConnection socket(to hear changes). It implements functions for make rpc requests and their
+response. These rpc requests are for provisioning of devices.
+
+For more on writing provision / virtual params / presets follow links (very helpful)
+https://github.com/genieacs/genieacs/wiki/Provisions#commit
+https://github.com/genieacs/genieacs/wiki/Virtual-Parameters
+https://github.com/genieacs/genieacs-gui/wiki/Presets-Tab
+
+####################################################################################################
  */
 
 import * as zlib from "zlib";
@@ -111,7 +111,7 @@ async function authenticate(
 
     authentication["body"] = body;
   }
-
+// running some auth checks based on auth method
   const res = await evaluateAsync(
     authExpression,
     {},
@@ -225,6 +225,7 @@ async function writeResponse(
     currentSessions.set(connection, sessionContext);
   }
 }
+// declared twice and  implemented third time (author's choice)
 function recordFault(
   sessionContext: SessionContext,
   fault: Fault,
@@ -276,7 +277,7 @@ function recordFault(
 
     if (!sessionContext.faultsTouched) sessionContext.faultsTouched = {};
     sessionContext.faultsTouched[channel] = true;
-
+// start logging warning logs (sets logging severity level high)
     logger.accessWarn({
       sessionContext: sessionContext,
       message: "Channel has faulted",
@@ -302,8 +303,8 @@ function recordFault(
   session.clearProvisions(sessionContext);
 }
 /**
- * @description Implementation of inform request of SNMP (simple network management protocol)
- * This function is used to get soap response of a request used in processing requests.
+ * @description function to get SOAP message response. This function uses soap.response fn from soap.ts
+ * and res it gets is eventually used in main writing http response.
  * @param sessionContext 
  * @param rpc 
  */
@@ -340,13 +341,17 @@ async function inform(
 
   return res;
 }
-
+/**
+ * @description Response on completion or remote procedure call
+ * @param sessionContext session
+ * @param rpc remote procedure call
+ */
 async function transferComplete(sessionContext, rpc): Promise<void> {
   const { acsResponse, operation, fault } = await session.transferComplete(
     sessionContext,
     rpc.cpeRequest
   );
-
+// logs if not operation
   if (!operation) {
     logger.accessWarn({
       sessionContext: sessionContext,
@@ -354,7 +359,7 @@ async function transferComplete(sessionContext, rpc): Promise<void> {
       rpc: rpc
     });
   }
-
+// logs if fault occurs
   if (fault) {
     Object.assign(sessionContext.retries, operation.retries);
     recordFault(
@@ -364,7 +369,7 @@ async function transferComplete(sessionContext, rpc): Promise<void> {
       operation.channels
     );
   }
-
+// send response if all goes right
   const res = soap.response({
     id: rpc.id,
     acsResponse: acsResponse,
@@ -410,14 +415,16 @@ function appendProvisions(original, toAppend): boolean {
   return modified;
 }
 /**
- * @summary get Presets from db
+ * @summary get Presets from db and apply on devices Presets are action to be taken on devices 
+ * Presets are like actions to be executed on device based on pre set conditions (if matched)
+ * They are applied through remote procedure call rpc
  * @param sessionContext runtime http session instance
  */
 async function applyPresets(sessionContext: SessionContext): Promise<void> {
   const deviceData = sessionContext.deviceData;
   const presets = localCache.getPresets(sessionContext.cacheSnapshot);
 
-  // Filter presets based on existing faults
+
   const blackList = {};
   let whiteList = null;
   let whiteListProvisions = null;
@@ -625,7 +632,7 @@ async function nextRpc(sessionContext: SessionContext): Promise<void> {
     if (channel.startsWith("task_")) {
       const taskId = channel.slice(5);
       if (!sessionContext.doneTasks) sessionContext.doneTasks = [];
-      sessionContext.doneTasks.push(taskId);
+      sessionContext.doneTasks.push(taskId); //push completed tasks in an array
 
       for (let j = 0; j < sessionContext.tasks.length; ++j) {
         if (sessionContext.tasks[j]._id === taskId) {
@@ -668,9 +675,9 @@ async function nextRpc(sessionContext: SessionContext): Promise<void> {
   if (!task) return applyPresets(sessionContext);
 
   let alias;
-
+// add tasks to be performed on device as a provision
   switch (task.name) {
-    case "getParameterValues":
+    case "getParameterValues": // methods in method.js in genieacs-sim
       // Set channel in case params array is empty
       sessionContext.channels[`task_${task._id}`] = 0;
       for (const p of task.parameterNames) {
@@ -726,14 +733,14 @@ async function nextRpc(sessionContext: SessionContext): Promise<void> {
   return nextRpc(sessionContext);
 }
 /**
- * @summary End running session
+ * @summary End running session 
  * @param sessionContext runtime http session instance
  */
 async function endSession(sessionContext: SessionContext): Promise<boolean> {
   let saveCache = sessionContext.cacheUntil != null;
 
   const promises = [];
-
+// save device in db with which session in created 
   promises.push(
     db.saveDevice(
       sessionContext.deviceId,
@@ -780,7 +787,7 @@ async function endSession(sessionContext: SessionContext): Promise<boolean> {
       }
     }
   }
-
+//cache any tasks faults operations if there are of device
   if (saveCache) {
     promises.push(
       cacheDueTasksAndFaultsAndOperations(
@@ -808,9 +815,9 @@ async function sendAcsRequest(
   id?: string,
   acsRequest?: AcsRequest
 ): Promise<void> {
-  if (!acsRequest)
+  if (!acsRequest) //if request empty response null
     return writeResponse(sessionContext, soap.response(null), true);
-
+// if acs request is download then download file on device using file server
   if (acsRequest.name === "Download") {
     const downloadRequest = acsRequest as SetAcsRequest;
     downloadRequest.fileSize = 0;
@@ -850,7 +857,7 @@ async function sendAcsRequest(
   return writeResponse(sessionContext, res);
 }
 /**
- * @summary Get session instace against give connection and id
+ * @summary Get session instace against give connection and session id
  * @param connection Connection
  * @param sessionId ID
  * @returns session if exists else null
@@ -883,13 +890,13 @@ export function onConnection(socket: Socket): void {
   // The property remoteAddress may be undefined after the connection is
   // closed, unless we read it at least once (caching?)
   remoteAddressWorkaround.set(socket, socket.remoteAddress);
-
+// on close, delete current session
   socket.on("close", async () => {
     const sessionContext = currentSessions.get(socket);
     if (!sessionContext) return;
     currentSessions.delete(socket);
     const now = Date.now();
-
+//store last activity
     const lastActivity = sessionContext.lastActivity;
     const timeoutMsg = logger.flatten({
       sessionContext: sessionContext,
@@ -921,7 +928,7 @@ export function onConnection(socket: Socket): void {
     );
   });
 }
-
+// setInterval continure calling untill after some interval noticing all requests and session 
 setInterval(() => {
   if (stats.droppedRequests) {
     logger.warn({
@@ -936,7 +943,7 @@ setInterval(() => {
   stats.totalRequests = 0;
   stats.droppedRequests = 0;
   stats.initiatedSessions = 0;
-}, 10000).unref();
+}, 10000).unref(); //timer 10s
 /**
  * @description Get due taks and faults of a device
  * @param deviceId device Id 
@@ -1067,7 +1074,7 @@ async function responseUnauthorized(
   httpResponse.end(body);
 }
 /**
- * @description Process and log an rpc request based on type of request
+ * @description Process and log a htto request based on type of request
  * @param sessionContext sessionContext 
  * @param rpc rpc 
  * @param parseWarnings parseWarnings 
@@ -1084,7 +1091,8 @@ async function processRequest(
     w.rpc = rpc;
     logger.accessWarn(w);
   }
-
+// initial request should be inform request otherwise bad state (The post request CPE sends
+// initially is inform request)
   if (sessionContext.state === 0) {
     if (!rpc.cpeRequest || rpc.cpeRequest.name !== "Inform")
       return reportBadState(sessionContext);
@@ -1126,7 +1134,7 @@ async function processRequest(
         return responseUnauthorized(sessionContext, true);
       }
     }
-
+// set session state to 1 after auth
     sessionContext.state = 1;
     sessionContext.authState = 2;
 
@@ -1239,7 +1247,9 @@ async function processRequest(
   }
 }
 /**
- * @description Listener to handle session messages/requests 
+ * @description The HTTP listener is an event source that enables you to set up an HTTP server 
+ * and trigger flows when HTTP requests are received This is a listener for cwmp-server to listen
+ * to CPE's requests
  * @param httpRequest IncomingMessage
  * @param httpResponse ServerResponse
  */
@@ -1248,6 +1258,7 @@ export function listener(
   httpResponse: ServerResponse
 ): void {
   stats.concurrentRequests += 1;
+  // Handle requests asyncly
   listenerAsync(httpRequest, httpResponse)
     .then(() => {
       stats.concurrentRequests -= 1;
@@ -1276,7 +1287,8 @@ function decodeString(buffer: Buffer, charset: string): string {
   return null;
 }
 /**
- * @description Handle requests asynchronnously used by listener() only POST request allowed on this server
+ * @description Handle requests asynchronnously used by listener() only POST request
+ * allowed on this server. 
  * @param httpRequest IncomingMessage
  * @param httpResponse  ServerResponse
  * @returns resolves promise on completion
@@ -1286,7 +1298,7 @@ async function listenerAsync(
   httpResponse: ServerResponse
 ): Promise<void> {
   stats.totalRequests += 1;
-
+// only post requests allowed because cpe makes only post request
   if (httpRequest.method !== "POST") {
     httpResponse.writeHead(405, {
       Allow: "POST",
@@ -1303,7 +1315,7 @@ async function listenerAsync(
   while ((match = COOKIE_REGEX.exec(httpRequest.headers.cookie)))
     if (match[1] === "session") sessionId = match[2];
 
-  // If overloaded, ask CPE to retry in 60 seconds
+  // If server is overloaded, ask CPE to retry in 60 seconds
   if (!sessionId && stats.concurrentRequests > MAX_CONCURRENT_REQUESTS) {
     httpResponse.writeHead(503, {
       "Retry-after": 60,
@@ -1313,7 +1325,7 @@ async function listenerAsync(
     stats.droppedRequests += 1;
     return;
   }
-
+// decompress request stream using gunzip or deflate based on which way it was compressed
   let stream: Readable = httpRequest;
   if (httpRequest.headers["content-encoding"]) {
     switch (httpRequest.headers["content-encoding"]) {
@@ -1329,7 +1341,7 @@ async function listenerAsync(
         return;
     }
   }
-
+// creating complete body from chunks
   const body = await new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = [];
     let bytes = 0;
@@ -1362,7 +1374,7 @@ async function listenerAsync(
   const newConnection = !currentSessions.has(httpRequest.connection);
 
   const sessionContext = await getSession(httpRequest.connection, sessionId);
-
+// check session expiry and validity 
   if (sessionContext) {
     sessionContext.httpRequest = httpRequest;
     sessionContext.httpResponse = httpResponse;
@@ -1498,10 +1510,10 @@ async function listenerAsync(
     httpResponse.end(error.message);
     return;
   }
-
+// process the request if sessionContext exists and return
   if (sessionContext)
     return processRequest(sessionContext, rpc, parseWarnings, bodyStr);
-
+// check that its an inform request if starting new session
   if (!(rpc.cpeRequest && rpc.cpeRequest.name === "Inform")) {
     logger.accessError({
       message: "Invalid session",
@@ -1510,6 +1522,7 @@ async function listenerAsync(
         httpResponse: httpResponse
       }
     });
+    //reponsd in error if invalid session
     const _body = "Invalid session";
     httpResponse.setHeader("Content-Length", Buffer.byteLength(_body));
     httpResponse.writeHead(400, { Connection: "close" });
@@ -1532,7 +1545,7 @@ async function listenerAsync(
     httpResponse.end(_body);
     return;
   }
-
+// if valid session increase sessions count & generate device id
   stats.initiatedSessions += 1;
   const deviceId = common.generateDeviceId(rpc.cpeRequest.deviceId);
 
@@ -1576,12 +1589,12 @@ async function listenerAsync(
       _sessionContext.retries[k] = v.retries;
     }
   }
-
+// check if device already stored in db 
   const parameters = await db.fetchDevice(
     _sessionContext.deviceId,
     _sessionContext.timestamp
   );
-
+// incase already existing device
   if (parameters) {
     for (const p of parameters) {
       const path = _sessionContext.deviceData.paths.add(p[0]);
@@ -1592,6 +1605,6 @@ async function listenerAsync(
     // Device not available in database, mark as new
     _sessionContext.new = true;
   }
-
+// process request for newly registered device
   return processRequest(_sessionContext, rpc, parseWarnings, bodyStr);
 }

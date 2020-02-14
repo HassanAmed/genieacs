@@ -1,24 +1,19 @@
+
 /**
- * Copyright 2013-2019  GenieACS Inc.
- *
- * This file is part of GenieACS.
- *
- * GenieACS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * GenieACS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with GenieACS.  If not, see <http://www.gnu.org/licenses/>.
+#####################################    File Description    #######################################
+
+This  file implements CNF(conjuntive normal form) for custom created Expression type.These basic math
+function are inbuilt in languages for primitive data types but being a custom type author has 
+explicitly implemented all of these functions(see function names). Therefore deep understanding of
+function of this file is not necessary as we know what these function ought to do.
+
+
+See file description of expression.ts in common folder to what and why expression.ts are used.
+
+####################################################################################################
  */
-/**
- * **Note This  file implements CNF(conjuntive normal form) for custom created type. 
- */
+
+ 
 import { map, parseLikePattern } from "./expression-parser";
 import { Expression } from "../types";
 
